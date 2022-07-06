@@ -1,0 +1,22 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{object.name}}'s Profile{% endblock title %}
+
+{% block body %}
+<h1 style="display: inline-block;">{{object.name}}</h1>
+<img src="{{object.picture.url}}" style="width:5cm; float: right;">
+<hr>
+<h3>Description</h3>
+<br><h4>{{object.description}}</h4>
+<hr>
+<h3>Location</h3>
+<h4>{{object.country}} - {{object.city}} - {{object.detailed_address}}</h4>
+<hr>
+<h3>Email</h3>
+<h4>{{object.email}}</h4>
+<hr>
+<small>owner</small>
+<small>{{object.owner}}</small>
+
+{% endblock body %}

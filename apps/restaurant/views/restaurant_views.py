@@ -1,4 +1,4 @@
-from django.views.generic import FormView, UpdateView
+from django.views.generic import FormView, UpdateView, DetailView, TemplateView
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
@@ -37,3 +37,12 @@ class UpdateRestaurantView(LoginRequiredMixin, RestaurantUpdateMixin, UpdateView
     def get_object(self):
         return get_object_or_404(Restaurant, pk=self.kwargs["pk"],
                                          slug=self.kwargs["slug"], owner= self.request.user)
+
+class ProfileRestaurant(DetailView):
+    template_name = "restaurant/profile-restaurant.html" 
+    
+    def get_object(self):
+        return get_object_or_404(Restaurant, pk=self.kwargs["pk"], slug=self.kwargs["slug"])
+
+class DashBoardRestaurant(TemplateView):
+    template_name = "restaurant/dashboard-restaurant.html" 
