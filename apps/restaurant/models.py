@@ -6,7 +6,7 @@ from accounts.models import User
 
 class Restaurant(models.Model):
     name = models.CharField(max_length= 50)
-    slug = models.SlugField(max_length=50, unique=True)
+    slug = models.SlugField(max_length=50, unique=True, blank=True)
     
     picture = models.ImageField(upload_to= "restaurant/profile")
     description = models.TextField()
@@ -15,7 +15,7 @@ class Restaurant(models.Model):
     city = models.CharField(max_length=30, blank=True)
     detailed_address = models.CharField(max_length=120, blank=True)
 
-    owner = models.OneToOneField(User,on_delete=models.CASCADE ,related_name="restaurant")
+    owner = models.OneToOneField(User,on_delete=models.CASCADE ,related_name="restaurant", blank=True)
     email = models.EmailField(max_length=70, unique=True)
 
     ratings = GenericRelation(Rating)
