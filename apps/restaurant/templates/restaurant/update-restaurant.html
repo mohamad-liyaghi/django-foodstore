@@ -1,0 +1,24 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Update Restaurant{% endblock title %}
+
+{% block body %}
+<h2>Update Restaurant</h2><br>
+
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+    <hr>
+    {{form.name | as_crispy_field }}
+    {{form.description | as_crispy_field }}
+    {{form.email | as_crispy_field }}
+    <h6>Profile picture</h6>
+    {{form.picture}} <br><br>
+    <hr><h4>Address</h4><br>
+    {{form.country | as_crispy_field }}
+    {{form.city | as_crispy_field }}
+    {{form.detailed_address | as_crispy_field }}
+    
+    <br><button class="btn btn-success" type="submit">Register</button>
+    <br><br>
+</form>
+{% endblock body %}

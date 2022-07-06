@@ -1,11 +1,13 @@
-from django.views.generic import FormView
+from django.views.generic import FormView, UpdateView
 from django.contrib import messages
+from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from restaurant.forms import RegisterRestaurantForm
-from restaurant.mixins import RestaurantRegisterMixin
+from restaurant.mixins import RestaurantRegisterMixin, RestaurantUpdateMixin
 from accounts.models import User
+from restaurant.models import Restaurant
 
 class RegisterRestaurantView(LoginRequiredMixin, RestaurantRegisterMixin, FormView):
     '''
@@ -27,3 +29,11 @@ class RegisterRestaurantView(LoginRequiredMixin, RestaurantRegisterMixin, FormVi
     
     def form_invalid(self, form):
         messages.success(self.request, "sth went wrong with your information...", "alert")
+
+class UpdateRestaurantView(LoginRequiredMixin, RestaurantUpdateMixin, UpdateView):
+    template_name = "restaurant/update-restaurant.html" 
+    fields = ["name", "picture", "description", "country", "city", "detailed_address", "email"]
+    
+    def get_object(self):
+        return get_object_or_404(Restaurant, pk=self.kwargs["pk"],
+                                         slug=self.kwargs["slug"], owner= self.request.user)

@@ -7,8 +7,21 @@ class RestaurantRegisterMixin():
         If user have already registered restaurant, he will be redirected
     '''
     def dispatch(self, request, *args, **kwargs):
-        user = User.objects.filter(email= self.request.user.email, full_name= self.request.user.full_name).first()
+        user = self.request.user
         if user.add_food and user.restaurant:
             return redirect("#")
+
+        return super().dispatch(request, *args, **kwargs)
+
+class RestaurantUpdateMixin():
+    '''
+        Mixin for updating a restaurants information
+    '''
+
+    def dispatch(self, request, *args, **kwargs):
+        user = self.request.user
+
+        if not user.add_food and user.restaurant:
+            return redirect("restaurant:register_restaurant")
 
         return super().dispatch(request, *args, **kwargs)
