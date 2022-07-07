@@ -1,10 +1,12 @@
-from django.views.generic import  FormView
-from django.shortcuts import  redirect
+from django.views.generic import  FormView, UpdateView, DetailView
+from django.shortcuts import  redirect, get_object_or_404
 from django.template.defaultfilters import slugify
 from django.contrib import  messages
+from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from restaurant.mixins import AddFoodMixin
+from restaurant.models import  Food
+from restaurant.mixins import AddFoodMixin, FoodUpdateMixin
 from restaurant.forms import FoodForm
 
 class CreateFoodView(LoginRequiredMixin, AddFoodMixin, FormView):
@@ -26,4 +28,28 @@ class CreateFoodView(LoginRequiredMixin, AddFoodMixin, FormView):
         return  redirect("restaurant:restaurant-dashboard")
 
 
+class UpdateFoodView(LoginRequiredMixin, FoodUpdateMixin, UpdateView):
+    '''
+        Update foods status or price
+    '''
+    template_name = "food/update-food.html"
 
+
+    fields = ["inventory","price", "is_available"]
+
+    def get_object(self):
+        return get_object_or_404(Food, pk=self.kwargs["pk"],
+                                 slug=self.kwargs["slug"], provider=self.request.user.restaurant)
+
+    def get_success_url(self):
+        return reverse("restaurant:restaurant-dashboard")
+
+class DetailFoodView(DetailView):
+    '''
+        Detail page for foods
+    '''
+    template_name = "food/detail-food.html"
+
+    def get_object(self):
+        return  get_object_or_404(Food, pk=self.kwargs["pk"],
+                          slug=self.kwargs["slug"], provider=self.request.user.restaurant)

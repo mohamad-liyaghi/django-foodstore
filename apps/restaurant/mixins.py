@@ -31,3 +31,9 @@ class AddFoodMixin(RestaurantUpdateMixin):
         Mixin for adding food
     '''
     pass
+
+class FoodUpdateMixin(RestaurantUpdateMixin):
+    '''
+        Mixin for updating food
+    '''
+    pass

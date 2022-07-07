@@ -1,0 +1,18 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Update Food{% endblock title %}
+
+{% block body %}
+<h2>Update Food</h2><br>
+
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+    <hr>
+    {{form.inventory | as_crispy_field }}
+    {{form.price | as_crispy_field }}
+    <h6>Is Available</h6>{{form.is_available }} <br>
+    
+    <br><button class="btn btn-success" type="submit">Save</button>
+    <br><br>
+</form>
+{% endblock body %}
