@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from restaurant.forms import RegisterRestaurantForm
 from restaurant.mixins import RestaurantRegisterMixin, RestaurantUpdateMixin
 from accounts.models import User
-from restaurant.models import Restaurant
+from restaurant.models import Restaurant, Food
 
 class RegisterRestaurantView(LoginRequiredMixin, RestaurantRegisterMixin, FormView):
     '''
@@ -54,4 +54,10 @@ class DashBoardRestaurant(TemplateView):
     '''
         Dashboard page
     '''
-    template_name = "restaurant/dashboard-restaurant.html" 
+    template_name = "restaurant/dashboard-restaurant.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(DashBoardRestaurant, self).get_context_data(**kwargs)
+        context['food'] = Food.objects.filter(provider= self.request.user.restaurant).count()
+        context['restaurant'] = Restaurant.objects.filter(owner= self.request.user).first()
+        return context

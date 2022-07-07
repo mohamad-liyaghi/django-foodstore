@@ -22,7 +22,7 @@ class Restaurant(models.Model):
     ratings = GenericRelation(Rating)
 
     def get_absolute_url(self):
-        return reverse("restaurant:restaurant-profile", kwargs={"pk" : self.pk, "slug" : self.slug})
+        return reverse("restaurant:restaurant-profile", kwargs={'pk': self.pk, "slug" : self.slug})
 
     def __str__(self):
         return  self.name
@@ -49,6 +49,8 @@ class Food(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return  reverse("restaurant:detail-food", args=[self.pk, self.slug])
 
 class Category(models.Model):
     title = models.CharField(max_length=20)

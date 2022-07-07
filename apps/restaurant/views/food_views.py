@@ -1,4 +1,4 @@
-from django.views.generic import  FormView, UpdateView, DetailView
+from django.views.generic import  FormView, UpdateView, DetailView, ListView
 from django.shortcuts import  redirect, get_object_or_404
 from django.template.defaultfilters import slugify
 from django.contrib import  messages
@@ -42,7 +42,7 @@ class UpdateFoodView(LoginRequiredMixin, FoodUpdateMixin, UpdateView):
                                  slug=self.kwargs["slug"], provider=self.request.user.restaurant)
 
     def get_success_url(self):
-        return reverse("restaurant:restaurant-dashboard")
+        return reverse("restaurant:list-food")
 
 class DetailFoodView(DetailView):
     '''
@@ -53,3 +53,12 @@ class DetailFoodView(DetailView):
     def get_object(self):
         return  get_object_or_404(Food, pk=self.kwargs["pk"],
                           slug=self.kwargs["slug"], provider=self.request.user.restaurant)
+class ListFoodView(ListView):
+    '''
+        List of all foods of a restaurant
+    '''
+    template_name = "food/list-food.html"
+    context_object_name = "foods"
+
+    def get_queryset(self):
+        return Food.objects.filter(provider= self.request.user.restaurant)

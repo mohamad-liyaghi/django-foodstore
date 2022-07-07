@@ -7,16 +7,13 @@
 <h1 style="display: inline-block;">{{object.name}}</h1>
 <img src="{{object.picture.url}}" style="width:5cm; float: right;">
 <hr>
-<h3>Description</h3>
-<br><h4>{{object.description}}</h4>
+<p>{{object.description}}</p>
 <hr>
-<h3>Location</h3>
-<h4>{{object.country}} - {{object.city}} - {{object.detailed_address}}</h4>
+<h4>Location</h4>
+<h5>{{object.country}} - {{object.city}} - {{object.detailed_address}}</h5>
 <hr>
-<h3>Email</h3>
-<h4>{{object.email}}</h4>
+<h4>Email</h4>
+<h5>{{object.email}}</h5>
 <hr>
-<small>owner</small>
-<small>{{object.owner}}</small>
-
+<small>owner: {{object.owner}}</small>
 {% endblock body %}

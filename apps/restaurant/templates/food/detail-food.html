@@ -7,13 +7,13 @@
 <h1 style="display: inline-block;">{{object.name}}</h1>
 <img src="{{object.picture.url}}" style="width:5cm; float: right;">
 <hr>
-<br><h4>{{object.description}}</h4>
+<br><h5>{{object.description}}</h5>
 <hr>
-<h4>Provider: {{object.provider}}</h4>
+<h5>Provider: {{object.provider}}</h5>
 <hr><br>
 {% if object.is_available %}
-    <h4>{{object.inventory}} in stock</h4><br>
-    <h4>Price: {{object.price}}</h4><br>
+    <h5>{{object.inventory}} in stock</h5><br>
+    <h5>Price: {{object.price}}</h5><br>
     <button class="btn btn-success" type="submit">Add to card</button>
 {% else %}
 <h3>This item is currently unavailable</h3>

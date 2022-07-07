@@ -4,6 +4,14 @@
 {% block title %}DashBord{% endblock title %}
 
 {% block body %}
-<h2>DashBord</h2>
+<h2>DashBord</h2> <hr><br>
+<h4>You have {{food}} foods</h4>
+<a href="{% url 'restaurant:list-food' %}">List of foods</a>
+<br><hr>
+
+<a href="{{ restaurant.get_absolute_url }}"><h4>Profile page</h4></a><br>
+<a href="{% url 'restaurant:restaurant-update' restaurant.pk restaurant.slug%}"><h4>Update your profile page</h4></a>
+
+<br><hr>
 
 {% endblock body %}

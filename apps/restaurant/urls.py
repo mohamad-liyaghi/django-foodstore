@@ -1,12 +1,13 @@
 from django.urls import path
 from .views.restaurant_views import (RegisterRestaurantView, UpdateRestaurantView, ProfileRestaurant, DashBoardRestaurant)
-from .views.food_views import (CreateFoodView, UpdateFoodView, DetailFoodView)
+from .views.food_views import (CreateFoodView, UpdateFoodView, DetailFoodView, ListFoodView)
 
 app_name = "restaurant"
 
 
 urlpatterns = [
     path("", DashBoardRestaurant.as_view(), name="restaurant-dashboard"),
+    path("foods/", ListFoodView.as_view(), name="list-food"),
 
     path("register/", RegisterRestaurantView.as_view(), name="register-restaurant"),
     path("create-food/", CreateFoodView.as_view(), name="create-food"),
