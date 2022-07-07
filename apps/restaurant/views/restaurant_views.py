@@ -31,6 +31,9 @@ class RegisterRestaurantView(LoginRequiredMixin, RestaurantRegisterMixin, FormVi
         messages.success(self.request, "sth went wrong with your information...", "alert")
 
 class UpdateRestaurantView(LoginRequiredMixin, RestaurantUpdateMixin, UpdateView):
+    '''
+        Update restaurant page
+    '''
     template_name = "restaurant/update-restaurant.html" 
     fields = ["name", "picture", "description", "country", "city", "detailed_address", "email"]
     
@@ -39,10 +42,16 @@ class UpdateRestaurantView(LoginRequiredMixin, RestaurantUpdateMixin, UpdateView
                                          slug=self.kwargs["slug"], owner= self.request.user)
 
 class ProfileRestaurant(DetailView):
+    '''
+        Restaurant profile page
+    '''
     template_name = "restaurant/profile-restaurant.html" 
     
     def get_object(self):
         return get_object_or_404(Restaurant, pk=self.kwargs["pk"], slug=self.kwargs["slug"])
 
 class DashBoardRestaurant(TemplateView):
+    '''
+        Dashboard page
+    '''
     template_name = "restaurant/dashboard-restaurant.html" 

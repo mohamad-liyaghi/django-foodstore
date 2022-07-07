@@ -1,0 +1,25 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Food{% endblock title %}
+
+{% block body %}
+<h2>Create Food</h2><br>
+
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+    <hr>
+    {{ form.name | as_crispy_field }} <br>
+    <h6>Picture</h6>
+    {{ form.picture }} <br><br>
+    {{ form.description | as_crispy_field }} <br>
+    <h6>Category*</h6>
+    {{ form.category }} <br>
+    <hr>
+    {{ form.inventory | as_crispy_field }}
+    {{ form.price | as_crispy_field }}
+    {{ form.is_available | as_crispy_field }}
+    
+    <br><button class="btn btn-success" type="submit">Create</button>
+    <br><br>
+</form>
+{% endblock body %}

@@ -9,7 +9,7 @@ class RestaurantRegisterMixin():
     def dispatch(self, request, *args, **kwargs):
         user = self.request.user
         if user.add_food and user.restaurant:
-            return redirect("#")
+            return redirect("restaurant:restaurant-dashboard")
 
         return super().dispatch(request, *args, **kwargs)
 
@@ -22,6 +22,12 @@ class RestaurantUpdateMixin():
         user = self.request.user
 
         if not user.add_food and user.restaurant:
-            return redirect("restaurant:register_restaurant")
+            return redirect("restaurant:register-restaurant")
 
         return super().dispatch(request, *args, **kwargs)
+
+class AddFoodMixin(RestaurantUpdateMixin):
+    '''
+        Mixin for adding food
+    '''
+    pass

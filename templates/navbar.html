@@ -1,0 +1,21 @@
+    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4\
+     mb-3 bg-white border-bottom shadow-sm">
+      <a href="#" class="navbar-brand my-0 mr-md-auto font-weight-normal">FoodStore</a>
+      <nav class="my-2 my-md-0 mr-md-3">
+        {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Account
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{% url 'restaurant:restaurant-dashboard' %}">Dashboard</a>
+                    <a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a>
+                </div>
+          </li>
+          {% else %}
+          <a class="p-2 text-dark" href="{% url 'account_login' %}">Log In</a>
+          <a class="btn btn-outline-primary"
+            href="{% url 'account_signup' %}">Sign Up</a>
+        {% endif %}
+      </nav>
+    </div>
