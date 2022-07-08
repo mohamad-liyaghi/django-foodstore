@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     # local apps
     'apps.accounts.apps.AccountsConfig',
     'apps.restaurant.apps.RestaurantConfig',
+    'apps.customer.apps.CustomerConfig',
 ]
 
 MIDDLEWARE = [
