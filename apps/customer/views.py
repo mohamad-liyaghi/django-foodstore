@@ -34,6 +34,14 @@ class CartAddView(View):
 			cart.add(food, 1)
 		return redirect('customer:cart-page')
 
+class CartRemoveView(View):
+    def get(self, request, food_id):
+        cart = Cart(request)
+        food = get_object_or_404(Food, id=food_id)
+        cart.remove(food)
+        return redirect('customer:cart-page')
+
+
 class FoodSearchView(ListView):
     '''
         Show result of searched data

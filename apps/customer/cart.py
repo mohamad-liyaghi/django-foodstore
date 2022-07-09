@@ -22,11 +22,32 @@ class Cart:
 			yield item
 
 	def add(self, food, quantity):
+		'''
+			Add food to cart
+		'''
 		food_id = str(food.id)
 		if food_id not in self.cart:
 			self.cart[food_id] = {'quantity':0, 'price':str(food.price)}
 		self.cart[food_id]['quantity'] += quantity
 		self.save()
 
+	def remove(self, food):
+		'''
+		remove food from cart
+		'''
+		food_id = str(food.id)
+		if food_id in self.cart:
+			del self.cart[food_id]
+			self.save()
+
 	def save(self):
+		'''
+			save sessions
+		'''
 		self.session.modified = True
+
+	def get_total_price(self):
+		'''
+			get total priec of cart items
+		'''
+		return sum(int(item['price']) * item['quantity'] for item in self.cart.values())

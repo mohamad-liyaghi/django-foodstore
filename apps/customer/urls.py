@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import HomePageView, FoodSearchView, CartPageView, CartAddView
+from .views import HomePageView, FoodSearchView, CartPageView, CartAddView, CartRemoveView
 
 app_name = "customer"
 
@@ -9,5 +9,6 @@ urlpatterns =[
 
     path("cart/", CartPageView.as_view(), name="cart-page"),
 
-    path("add-cart/<int:food_id>/", CartAddView.as_view(), name="cart-add")
+    path("add-cart/<int:food_id>/", CartAddView.as_view(), name="cart-add"),
+    path("remove-cart/<int:food_id>/", CartRemoveView.as_view(), name="cart-remove"),
 ]
