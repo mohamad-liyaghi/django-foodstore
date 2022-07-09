@@ -10,6 +10,13 @@ class HomePageView(TemplateView):
     '''
     template_name = "customer/home.html"
 
+class CartPageView(TemplateView):
+    '''
+        Show user orders
+    '''
+    template_name = "customer/cart.html"
+
+
 class FoodSearchView(ListView):
     '''
         Show result of searched data
