@@ -14,7 +14,7 @@
 {% if object.is_available %}
     <h5>{{object.inventory}} in stock</h5><br>
     <h5>Price: {{object.price}}</h5><br>
-    <button class="btn btn-success" type="submit">Add to card</button>
+    <a class="btn btn-success" href="{% url 'customer:cart-add' object.id %}">Add to cart</a>
 {% else %}
 <h3>This item is currently unavailable</h3>
 {% endif %}

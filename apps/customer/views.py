@@ -1,8 +1,10 @@
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView, ListView, View
 from django.db.models import Q
+from django.shortcuts import redirect, get_object_or_404
 
 from restaurant.models import Food, Category
 
+from .cart import Cart
 
 class HomePageView(TemplateView):
     '''
@@ -16,6 +18,16 @@ class CartPageView(TemplateView):
     '''
     template_name = "customer/cart.html"
 
+
+class CartAddView(View):
+
+	def get(self, request, food_id):
+		cart = Cart(request)
+		food = get_object_or_404(Food, id= food_id)
+
+		if food.is_available:
+			cart.add(food, 1)
+		return redirect('customer:cart-page')
 
 class FoodSearchView(ListView):
     '''
