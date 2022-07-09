@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView, ListView, View
 from django.db.models import Q
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404, render
 
 from restaurant.models import Food, Category
 
@@ -12,12 +12,17 @@ class HomePageView(TemplateView):
     '''
     template_name = "customer/home.html"
 
-class CartPageView(TemplateView):
+
+class CartPageView(View):
     '''
         Show user orders
     '''
-    template_name = "customer/cart.html"
 
+    def get(self, request):
+        cart = Cart(request)
+        a = request.session.get('cart')
+        print(a)
+        return render(request, "customer/cart.html", {'cart': cart})
 
 class CartAddView(View):
 

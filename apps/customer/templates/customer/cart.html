@@ -1,6 +1,6 @@
 {% extends '_base.html' %}
 
-{% block title %}Home page{% endblock title %}
+{% block title %}Cart page{% endblock title %}
 
 {% block body %}
 <table class="table">
@@ -9,18 +9,22 @@
       <th scope="col">#</th>
       <th scope="col">Name</th>
       <th scope="col">Price</th>
-      <th scope="col">Mount</th>
-      <th scope="col">Page</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">total</th>
+      <th scope="col">actions</th>
     </tr>
   </thead>
   <tbody>
+ {% for item in cart %}
     <tr>
-      <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
-      <td>@mdo</td>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{ item.product }}</td>
+        <td>{{ item.price }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.total_price }}</td>
+        <td>i</td>
     </tr>
+    {% endfor %}
   </tbody>
 </table>
 <a class="btn btn-success" style="color: white;">Order</a>
