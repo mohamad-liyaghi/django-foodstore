@@ -17,6 +17,7 @@ class Cart:
 		for food in foods:
 			cart[str(food.id)]['product'] = food
 
+
 		for item in cart.values():
 			item['total_price'] = int(item['price']) * item['quantity']
 			yield item
@@ -27,7 +28,7 @@ class Cart:
 		'''
 		food_id = str(food.id)
 		if food_id not in self.cart:
-			self.cart[food_id] = {'quantity':0, 'price':str(food.price)}
+			self.cart[food_id] = {'quantity':0, 'price':str(food.price), 'id' : str(food.id)}
 		self.cart[food_id]['quantity'] += quantity
 		self.save()
 
@@ -45,6 +46,13 @@ class Cart:
 			save sessions
 		'''
 		self.session.modified = True
+
+	def clear(self):
+		'''
+			clear cart after creating and order
+		'''
+		del self.session[CART_SESSION_ID]
+		self.save()
 
 	def get_total_price(self):
 		'''

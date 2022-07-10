@@ -1,8 +1,13 @@
 from django.views.generic import TemplateView, ListView, View
 from django.db.models import Q
 from django.shortcuts import redirect, get_object_or_404, render
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+import  random
+
 
 from restaurant.models import Food, Category
+from .models import Order
 
 from .cart import Cart
 
@@ -20,8 +25,6 @@ class CartPageView(View):
 
     def get(self, request):
         cart = Cart(request)
-        a = request.session.get('cart')
-        print(a)
         return render(request, "customer/cart.html", {'cart': cart})
 
 class CartAddView(View):
@@ -40,6 +43,19 @@ class CartRemoveView(View):
         food = get_object_or_404(Food, id=food_id)
         cart.remove(food)
         return redirect('customer:cart-page')
+
+class OrderCreateView(LoginRequiredMixin, View):
+    def get(self, request):
+        cart = Cart(request)
+        order = Order.objects.create(user= request.user, orderid= random.randint(10000000000000,99999999999999),
+                                     total_price= cart.get_total_price())
+        for food in cart:
+            order.items.add(food["product"])
+        cart.clear()
+        order.save()
+        return  redirect("customer:home")
+
+
 
 
 class FoodSearchView(ListView):
