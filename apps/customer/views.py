@@ -63,6 +63,13 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
         return get_object_or_404(Order, id= self.kwargs["id"], orderid= self.kwargs["orderid"])
 
 
+class OrderPayView(LoginRequiredMixin, View):
+    def get(self, request, id, orderid):
+        order = get_object_or_404(Order, id=id, orderid= orderid)
+        order.is_paid = True
+        order.status = "preparing"
+        order.save()
+        return redirect("customer:cart-page")
 
 class FoodSearchView(ListView):
     '''
