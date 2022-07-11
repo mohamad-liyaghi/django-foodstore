@@ -1,0 +1,15 @@
+{% extends '_base.html' %}
+
+{% block title %}{{object.orderid}}{% endblock title %}
+
+{% block body %}
+<br>
+<h4>Order id: {{object.orderid}}</h4> <hr>
+<h4>Total price: {{object.total_price}}$</h4> <hr>
+<h4>Items:</h4> <small>{% for food in object.items.all %} {{food}} {%endfor%}</small> <hr>
+{% if not object.is_paid %}
+<a href="{% url 'customer:order-pay' object.id object.orderid %}" class="btn btn-success">Pay {{object.total_price}}$</a>
+{% else %}
+    <h4>Status: {{object.status}}</h4>
+{% endif %}
+{% endblock body %}

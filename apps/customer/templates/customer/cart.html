@@ -48,5 +48,11 @@
       </tbody>
     </table>
     <a class="btn btn-success" href="{% url 'customer:order-create'  %}" style="color: white;">Order</a>
+    {% if orders %}
+    <hr><br><h5>Orders</h5> <br>
+        {% for order in orders %}
+            <a href="{% url 'customer:order-detail' order.pk order.orderid %}"><h6>{{order.orderid}}</h6></a> <br><hr>
+        {% endfor %}
+    {% endif %}
 
 {% endblock body %}

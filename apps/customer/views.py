@@ -1,4 +1,4 @@
-from django.views.generic import TemplateView, ListView, View
+from django.views.generic import TemplateView, ListView, View, DetailView
 from django.db.models import Q
 from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -25,8 +25,8 @@ class CartPageView(View):
 
     def get(self, request):
         cart = Cart(request)
-        return render(request, "customer/cart.html", {'cart': cart})
-
+        orders = Order.objects.filter(user= request.user)
+        return render(request, "customer/cart.html", {'cart': cart, "orders" : orders})
 class CartAddView(View):
 
 	def get(self, request, food_id):
@@ -55,6 +55,12 @@ class OrderCreateView(LoginRequiredMixin, View):
         order.save()
         return  redirect("customer:home")
 
+class OrderDetailView(LoginRequiredMixin, DetailView):
+    template_name = "customer/order-detail.html"
+
+
+    def get_object(self):
+        return get_object_or_404(Order, id= self.kwargs["id"], orderid= self.kwargs["orderid"])
 
 
 
