@@ -37,3 +37,9 @@ class FoodUpdateMixin(RestaurantUpdateMixin):
         Mixin for updating food
     '''
     pass
+
+class OrderListMixin(RestaurantUpdateMixin):
+    '''
+        Check if user can access to orders page
+    '''
+    pass

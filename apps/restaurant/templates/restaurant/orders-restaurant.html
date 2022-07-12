@@ -1,0 +1,27 @@
+{% extends '_base.html' %}
+{% block title %}Orders{% endblock title %}
+
+{% block body %}
+
+{% for order in orders %}
+   <div id="accordion">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            {{order.orderid}}
+        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+        {% for food in order.items.all %} {{ food }} <br> {% endfor %}
+          <br>
+          <a class="btn btn-success" href="{% url 'restaurant:food-delivered' order.id order.orderid %}">Delivered</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endblock body %}

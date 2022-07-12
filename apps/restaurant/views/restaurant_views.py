@@ -1,14 +1,14 @@
-from django.views.generic import FormView, UpdateView, DetailView, TemplateView
+from django.views.generic import FormView, UpdateView, DetailView, TemplateView, ListView
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from restaurant.forms import RegisterRestaurantForm
-from restaurant.mixins import RestaurantRegisterMixin, RestaurantUpdateMixin
+from restaurant.mixins import RestaurantRegisterMixin, RestaurantUpdateMixin, OrderListMixin
 from accounts.models import User
 from restaurant.models import Restaurant, Food
-
+from customer.models import Order
 class RegisterRestaurantView(LoginRequiredMixin, RestaurantRegisterMixin, FormView):
     '''
         Register a new restaurant
@@ -61,3 +61,16 @@ class DashBoardRestaurant(TemplateView):
         context['food'] = Food.objects.filter(provider= self.request.user.restaurant).count()
         context['restaurant'] = Restaurant.objects.filter(owner= self.request.user).first()
         return context
+
+class OrdersRestaurant(LoginRequiredMixin, OrderListMixin,ListView):
+    '''
+        Get all orders related to a restaurant
+    '''
+    template_name = "restaurant/orders-restaurant.html"
+    context_object_name = "orders"
+
+    def get_queryset(self):
+
+        print(self.request.user.restaurant.foods.all())
+        print(Order.objects.filter(items__in= self.request.user.restaurant.foods.all()))
+        return Order.objects.filter(items__in= self.request.user.restaurant.foods.all())
