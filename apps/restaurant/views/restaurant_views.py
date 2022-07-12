@@ -1,6 +1,6 @@
-from django.views.generic import FormView, UpdateView, DetailView, TemplateView, ListView
+from django.views.generic import FormView, UpdateView, DetailView, TemplateView, ListView, View
 from django.contrib import messages
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template.defaultfilters import slugify
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -70,7 +70,15 @@ class OrdersRestaurant(LoginRequiredMixin, OrderListMixin,ListView):
     context_object_name = "orders"
 
     def get_queryset(self):
+        return Order.objects.filter(items__in= self.request.user.restaurant.foods.all(), status="preparing")
 
-        print(self.request.user.restaurant.foods.all())
-        print(Order.objects.filter(items__in= self.request.user.restaurant.foods.all()))
-        return Order.objects.filter(items__in= self.request.user.restaurant.foods.all())
+class OrderSending(LoginRequiredMixin, OrderListMixin, View):
+    '''
+        Change status of an order
+    '''
+
+    def get(self, request, id, orderid):
+        object = get_object_or_404(Order, id= self.kwargs["id"], orderid=self.kwargs["orderid"])
+        object.status = "sending"
+        object.save()
+        return redirect("restaurant:restaurant-orders")

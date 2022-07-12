@@ -18,7 +18,7 @@
       <div class="card-body">
         {% for food in order.items.all %} {{ food }} <br> {% endfor %}
           <br>
-          <a class="btn btn-success" href="{% url 'restaurant:food-delivered' order.id order.orderid %}">Delivered</a>
+          <a class="btn btn-success" href="{% url 'restaurant:food-sending' order.id order.orderid %}">Delivered</a>
       </div>
     </div>
   </div>
