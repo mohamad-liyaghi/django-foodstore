@@ -11,5 +11,8 @@
 <a href="{% url 'customer:order-pay' object.id object.orderid %}" class="btn btn-success">Pay {{object.total_price}}$</a>
 {% else %}
     <h4>Status: {{object.status}}</h4>
+    {% if object.status == 'sending' %}
+        <a class="btn btn-success" href="{% url 'restaurant:food-arrived' object.id object.orderid %}">Arrived</a>
+    {% endif %}
 {% endif %}
 {% endblock body %}

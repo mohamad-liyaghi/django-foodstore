@@ -5,10 +5,12 @@ from django.template.defaultfilters import slugify
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from restaurant.forms import RegisterRestaurantForm
-from restaurant.mixins import RestaurantRegisterMixin, RestaurantUpdateMixin, OrderListMixin
+from restaurant.mixins import RestaurantRegisterMixin, RestaurantUpdateMixin, OrderListMixin, OrderArivedMixin
 from accounts.models import User
 from restaurant.models import Restaurant, Food
 from customer.models import Order
+
+
 class RegisterRestaurantView(LoginRequiredMixin, RestaurantRegisterMixin, FormView):
     '''
         Register a new restaurant
@@ -82,3 +84,14 @@ class OrderSending(LoginRequiredMixin, OrderListMixin, View):
         object.status = "sending"
         object.save()
         return redirect("restaurant:restaurant-orders")
+
+class OrderArrived(LoginRequiredMixin, OrderArivedMixin, View):
+    '''
+        Change status of an order to Arrived
+    '''
+
+    def get(self, request, id, orderid):
+        object = get_object_or_404(Order, id= self.kwargs["id"], orderid=self.kwargs["orderid"])
+        object.status = "arrived"
+        object.save()
+        return redirect("customer:home")
