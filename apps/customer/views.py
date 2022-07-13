@@ -50,7 +50,10 @@ class OrderCreateView(LoginRequiredMixin, View):
         order = Order.objects.create(user= request.user, orderid= random.randint(10000000000000,99999999999999),
                                      total_price= cart.get_total_price())
         for food in cart:
-            order.items.add(food["product"])
+            object = get_object_or_404(Food, name= food["product"])
+
+            if object.is_available:
+                order.items.add(food["product"])
         cart.clear()
         order.save()
         return  redirect("customer:home")
