@@ -54,6 +54,8 @@ class OrderCreateView(LoginRequiredMixin, View):
 
             if object.is_available:
                 order.items.add(food["product"])
+                object.inventory -= 1
+                object.save()
         cart.clear()
         order.save()
         return  redirect("customer:home")
