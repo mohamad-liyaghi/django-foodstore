@@ -29,7 +29,8 @@ class RegisterRestaurantView(LoginRequiredMixin, RestaurantRegisterMixin, FormVi
         form.save()
         user.save()
         messages.success(self.request,"restaurant registered successfully", "success")
-    
+        return redirect("restaurant:restaurant-dashboard")
+
     def form_invalid(self, form):
         messages.success(self.request, "sth went wrong with your information...", "alert")
 
@@ -37,9 +38,9 @@ class UpdateRestaurantView(LoginRequiredMixin, RestaurantUpdateMixin, UpdateView
     '''
         Update restaurant page
     '''
-    template_name = "restaurant/update-restaurant.html" 
+    template_name = "restaurant/update-restaurant.html"
     fields = ["name", "picture", "description", "country", "city", "detailed_address", "email"]
-    
+
     def get_object(self):
         return get_object_or_404(Restaurant, pk=self.kwargs["pk"],
                                          slug=self.kwargs["slug"], owner= self.request.user)
@@ -48,8 +49,8 @@ class ProfileRestaurant(DetailView):
     '''
         Restaurant profile page
     '''
-    template_name = "restaurant/profile-restaurant.html" 
-    
+    template_name = "restaurant/profile-restaurant.html"
+
     def get_object(self):
         return get_object_or_404(Restaurant, pk=self.kwargs["pk"], slug=self.kwargs["slug"])
 
@@ -100,6 +101,6 @@ class OrderArrived(LoginRequiredMixin, OrderArivedMixin, View):
 
     def get(self, request, id, orderid):
         object = get_object_or_404(Order, id= self.kwargs["id"], orderid=self.kwargs["orderid"])
-        object.status = "arrived"
+        object.status = "Arrived"
         object.save()
-        return redirect("customer:home")
+        return redirect("customer:cart")

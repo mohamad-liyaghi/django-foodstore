@@ -3,6 +3,7 @@
 {% block title %}Food list{% endblock title %}
 
 {% block body %}
+<a  class="btn btn-success" href="{% url 'restaurant:create-food' %}">Add food</a> <br><br>
 {% for food in foods %}
 <div class="card" style="width: 18rem; display:inline-block;">
   <img class="card-img-top" src="{{food.picture.url}}">

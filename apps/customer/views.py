@@ -58,7 +58,7 @@ class OrderCreateView(LoginRequiredMixin, View):
                 object.save()
         cart.clear()
         order.save()
-        return  redirect("customer:home")
+        return  redirect("customer:cart")
 
 class OrderDetailView(LoginRequiredMixin, DetailView):
     template_name = "customer/order-detail.html"

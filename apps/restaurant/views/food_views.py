@@ -18,14 +18,14 @@ class CreateFoodView(LoginRequiredMixin, AddFoodMixin, FormView):
     template_name = "food/create-food.html"
 
     def form_valid(self, form):
-        form = self.form_class(self.request.POST, self.request.FILES)
-        form = form.save(commit=False)
-        form.provider = self.request.user.restaurant
-        form.slug = slugify(form.name) + slugify(form.provider)
-        form.save()
+        form_data = self.form_class(self.request.POST, self.request.FILES)
+        form_data = form.save(commit=False)
+        form_data.provider = self.request.user.restaurant
+        form_data.slug = slugify(form_data.name) + slugify(form_data.provider)
+        form_data.save()
         form.save_m2m()
         messages.success(self.request, "food created successfully")
-        return  redirect("restaurant:restaurant-dashboard")
+        return  redirect("restaurant:list-food")
 
 
 class UpdateFoodView(LoginRequiredMixin, FoodUpdateMixin, UpdateView):
@@ -52,7 +52,7 @@ class DetailFoodView(DetailView):
 
     def get_object(self):
         return  get_object_or_404(Food, pk=self.kwargs["pk"],
-                          slug=self.kwargs["slug"], provider=self.request.user.restaurant)
+                          slug=self.kwargs["slug"])
 class ListFoodView(ListView):
     '''
         List of all foods of a restaurant
