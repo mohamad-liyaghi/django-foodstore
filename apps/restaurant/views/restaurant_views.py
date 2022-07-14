@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.template.defaultfilters import slugify
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 
 from restaurant.forms import RegisterRestaurantForm
 from restaurant.mixins import RestaurantRegisterMixin, RestaurantUpdateMixin, OrderListMixin, OrderArivedMixin
@@ -70,9 +71,9 @@ class OrdersRestaurant(LoginRequiredMixin, OrderListMixin,ListView):
     '''
     template_name = "restaurant/orders-restaurant.html"
     context_object_name = "orders"
-
     def get_queryset(self):
-        return Order.objects.filter(items__in= self.request.user.restaurant.foods.all(), status="preparing")
+        return Order.objects.filter(Q(items__in= self.request.user.restaurant.foods.all()), Q(status="preparing"),
+                                    ~Q(prepared_items__in = self.request.user.restaurant.foods.all()))
 
 class OrderSending(LoginRequiredMixin, OrderListMixin, View):
     '''
@@ -81,7 +82,14 @@ class OrderSending(LoginRequiredMixin, OrderListMixin, View):
 
     def get(self, request, id, orderid):
         object = get_object_or_404(Order, id= self.kwargs["id"], orderid=self.kwargs["orderid"])
-        object.status = "sending"
+        foods = object.items.all()
+        for food in foods:
+                if food in self.request.user.restaurant.foods.all():
+                    object.prepared_items.add(food)
+
+        if object.items.count() == object.prepared_items.count():
+            object.status = "sending"
+
         object.save()
         return redirect("restaurant:restaurant-orders")
 
