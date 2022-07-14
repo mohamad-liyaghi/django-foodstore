@@ -12,6 +12,7 @@ class Order(models.Model):
 
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='orders')
     items = models.ManyToManyField(Food, blank=True)
+    prepared_items = models.ManyToManyField(Food, blank=True, related_name="prepared_items")
     orderid = models.CharField(max_length=15, blank=True)
     total_price = models.IntegerField(blank=True)
 
