@@ -3,12 +3,13 @@ from django.db.models import Q
 from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import  messages
+from django.template import RequestContext
 
 import  random
 
 
 from restaurant.models import Food, Category
-from .models import Order
+from customer.models import Order
 
 from .cart import Cart
 
@@ -97,3 +98,11 @@ class FoodSearchView(ListView):
         return Food.objects.filter(
             Q(name__icontains=q) | Q(category__title= q)
         ).order_by("-is_available")
+
+
+
+def handler404 (request, exception):
+    return render(request, "errors/404.html", {})
+
+def handler500 (request, exception=None):
+    return render(request, "errors/500.html", {})
