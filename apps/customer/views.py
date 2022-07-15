@@ -2,6 +2,7 @@ from django.views.generic import TemplateView, ListView, View, DetailView
 from django.db.models import Q
 from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import  messages
 
 import  random
 
@@ -27,24 +28,29 @@ class CartPageView(View):
         cart = Cart(request)
         orders = Order.objects.filter(user= request.user)
         return render(request, "customer/cart.html", {'cart': cart, "orders" : orders})
+
 class CartAddView(View):
+    # add an item to cart
+    def get(self, request, food_id):
+        cart = Cart(request)
+        food = get_object_or_404(Food, id= food_id)
 
-	def get(self, request, food_id):
-		cart = Cart(request)
-		food = get_object_or_404(Food, id= food_id)
-
-		if food.is_available:
-			cart.add(food, 1)
-		return redirect('customer:cart-page')
+        if food.is_available:
+            cart.add(food, 1)
+            messages.success(self.request, "Food added to your cart")
+        return redirect('customer:cart-page')
 
 class CartRemoveView(View):
+    # remove an item form cart
     def get(self, request, food_id):
         cart = Cart(request)
         food = get_object_or_404(Food, id=food_id)
         cart.remove(food)
+        messages.success(self.request, "Item removed from your cart")
         return redirect('customer:cart-page')
 
 class OrderCreateView(LoginRequiredMixin, View):
+    # create a new order
     def get(self, request):
         cart = Cart(request)
         order = Order.objects.create(user= request.user, orderid= random.randint(10000000000000,99999999999999),
@@ -58,17 +64,20 @@ class OrderCreateView(LoginRequiredMixin, View):
                 object.save()
         cart.clear()
         order.save()
+        messages.success(self.request, "Order created successfully")
         return  redirect("customer:cart")
 
 class OrderDetailView(LoginRequiredMixin, DetailView):
+    # show detail of an order
     template_name = "customer/order-detail.html"
-
 
     def get_object(self):
         return get_object_or_404(Order, id= self.kwargs["id"], orderid= self.kwargs["orderid"])
 
 
 class OrderPayView(LoginRequiredMixin, View):
+    # page in order to pay for order
+    # you have to add your custom payment method
     def get(self, request, id, orderid):
         order = get_object_or_404(Order, id=id, orderid= orderid)
         order.is_paid = True
