@@ -18,6 +18,10 @@ class HomePageView(TemplateView):
         Home page
     '''
     template_name = "customer/home.html"
+    def get_context_data(self, **kwargs):
+        context = super(HomePageView, self).get_context_data(**kwargs)
+        context['categories'] = Category.objects.all().order_by("food_category")[:5]
+        return context
 
 
 class CartPageView(View):

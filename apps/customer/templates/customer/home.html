@@ -16,4 +16,12 @@
            </form>
       </div>
     </div>
+<br>
+<br>
+<h2 align="center">Popular Categories</h2> <br>
+<center>
+    {% for category in categories %}
+            <a href="{% url 'customer:food-result' %}?q={{category}}" class="btn btn-primary ">{{category}}</a>
+    {% endfor %}
+</center>
 {% endblock body %}
