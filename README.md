@@ -24,16 +24,19 @@ and pay for that.</p>
 ```
 
 <h3>Now install the dependencies.</h3>
+
 ```
 > pip install -r requirement.txt
 ```
 
 <h3>Run a migrate command.</h3>
+
 ```
 > python manage.py migrate
 ```
 
 <h3>Finally, start the server.</h3>
+
 ```
 > python manage.py runserver
 ```
