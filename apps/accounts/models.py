@@ -1,35 +1,33 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractUser
 from .managers import UserManager
 
-class User(AbstractBaseUser):
+class User(AbstractUser):
+    '''Base user class'''
 
-    full_name = models.CharField(max_length=120)
-    email = models.EmailField(max_length=120, unique=True)
-    userid = models.IntegerField(unique=True ,blank=True, null=True)
+    class Role(models.TextChoices):
+        '''User Role'''
+        SUPERUSER = ("s", "Superuser")
+        ADMIN = ("a", "Admin")
+        NORMAL = ("n", "Normal")
+        BLOCKED = ("b", "Blocked")
 
-    country = models.CharField(max_length=30, blank=True)
-    city = models.CharField(max_length=30, blank=True)
-    detailed_address = models.CharField(max_length=120, blank=True)
+    username = None
+    email = models.EmailField(max_length=200, unique=True)
+    userid = models.IntegerField(unique=True, blank=True, null=True)
+    balance = models.PositiveIntegerField(default=0)
+    role = models.CharField(max_length=1, choices=Role.choices, default=Role.NORMAL)
 
-    add_food = models.BooleanField(default=False)
-    is_admin = models.BooleanField(default=False)
-    
     objects = UserManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["full_name","country", "city", "detailed_address"]
+    REQUIRED_FIELDS = []
     
 
     def __str__(self):
-        return self.full_name
-
-    def has_perm(self, perm, obj=None):
-        return True
-
-    def has_module_perms(self, app_label):
-        return True
+        return self.email
 
     @property
-    def is_staff(self):
-        return self.is_admin
+    def is_blocked(self):
+        return bool(self.role == self.Role.BLOCKED)
+

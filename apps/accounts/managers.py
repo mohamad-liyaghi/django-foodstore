@@ -1,29 +1,33 @@
 from django.contrib.auth.models import BaseUserManager
 import random
 
-class UserManager(BaseUserManager):
-    def create_user(self, full_name, email, country, city, detailed_address, password):
 
-        if not full_name:
-            raise ValueError("Users must have full name!")
+class UserManager(BaseUserManager):
+    '''Override save method of User class'''
+
+    def create_user(self, email, password, **kwargs):
 
         if not email:
             raise ValueError("Users must have Email")
 
-
-        user_id = random.randint(10000000000000, 99999999999999)
+        userid = random.randint(1, 99999999999999)
+        email = self.normalize_email(email)
 
         user = self.model(
-            email= email, full_name= full_name,  userid= user_id,
-            country= country, city= city, detailed_address= detailed_address
+            email=email, userid=userid, **kwargs
         )
+
         user.set_password(password)
         user.save(using= self._db)
+
         return user
 
 
-    def create_superuser(self, full_name, email, country, city, detailed_address, password):
-        user = self.create_user(full_name, email, country, city, detailed_address, password)
-        user.is_admin = True
+    def create_superuser(self, email, password, **kwargs):
+        '''Create a superuser'''
+
+        user = self.create_user(email=email,  password=password,
+            role="s", is_staff=True, is_superuser=True, is_active=True)
+        
         user.save(using=self._db)
         return user
