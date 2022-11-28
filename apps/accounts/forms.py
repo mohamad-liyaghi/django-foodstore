@@ -8,11 +8,11 @@ class RegisterUserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ("email", "full_name","country", 'city',"detailed_address" , "password")
+        fields = ("email", "password")
     
     def save(self, commit= True): 
         user = super(RegisterUserForm, self).save(commit = False)
-        user.userid = random.randint(10000000000000, 99999999999999)
+        user.userid = random.randint(1, 99999999999999)
 
         if commit:
             user.save()
