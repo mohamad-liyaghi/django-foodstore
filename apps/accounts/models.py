@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
 from .managers import UserManager
 
 class User(AbstractUser):
@@ -31,3 +32,29 @@ class User(AbstractUser):
     def is_blocked(self):
         return bool(self.role == self.Role.BLOCKED)
 
+    
+class Profile(models.Model):
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="profile")
+
+    first_name = models.CharField(max_length=120)
+    last_name = models.CharField(max_length=120)
+
+    country = models.CharField(max_length=120)
+    city = models.CharField(max_length=120)
+    detailed_address = models.CharField(max_length=200)
+
+    phone_regex = RegexValidator(regex="\(?\d{3}\)?-? *\d{3}-? *-?\d{4}", 
+                                message="Phone number format must be like: (XXX) XXX XXXX")
+                                
+    phone_number = models.CharField(max_length=15, validators=[phone_regex])
+
+    passport_number = models.CharField(max_length=10)
+
+    
+    def __str__(self):
+        return self.full_name
+
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
