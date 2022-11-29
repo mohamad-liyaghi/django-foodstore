@@ -1,25 +1,27 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
+from accounts.models import User, Profile
 
-from accounts.models import User
-
-
+@admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    list_display = ('email', 'full_name', 'add_food')
+    list_display = ('email', 'userid', 'balance')
     list_filter = ('email',)
-    search_fields = ('email', 'full_name')
-    
-    ordering = ('full_name',)
+    search_fields = ('email', 'userid')
+    ordering = ('email',)
 
     filter_horizontal = ()
 
     fieldsets = (
-		(None, {'fields':('email', 'full_name','userid','country', 'city', 'detailed_address', 'password')}),
-		('Permissions', {'fields':('is_admin', 'last_login', 'add_food')}),
+		(None, {'fields':('email', 'userid', "balance", "role", 'password')}),
+		('Permissions', {'fields':('is_staff', "is_superuser", 'last_login')}),
 	)
 
     add_fieldsets = (
-        (None, {'fields':('email', 'full_name', 'country', 'city', 'detailed_address', 'password1', 'password2')}),
+        (None, {'fields':('email', 'password1', 'password2')}),
     )
-admin.site.register(User, UserAdmin)
+    
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ("user", "phone_number", "passport_number")

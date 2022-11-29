@@ -1,0 +1,28 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Profile{% endblock %}
+
+{% block body %}
+<div class="container">
+
+  <h3>Full name: {{ profile.first_name }} {{ profile.last_name }}</h3>
+  <h3>County: {{ profile.country }}/{{ profile.city }}</h3>
+  <hr>
+  {% if request.user == profile.user or request.user.role == 'a' or request.user.role == 's' %}
+        <h5>Detailed address: {{ profile.detailed_address }}</h5>
+        <h5>Phone number: {{ profile.phone_number }}</h5>
+        <h5>Passport number: {{ profile.passport_number }}</h5>
+  {% endif %}
+ <hr>
+  {% if request.user == profile.user %}
+    <div class="shadow p-4 mb-5 bg-body rounded">
+        <form method="post" action="">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button class="btn btn-success" type="submit">Update</button>
+        </form>
+    </div>
+  {% endif %}
+
+{% endblock body %}
