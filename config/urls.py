@@ -17,11 +17,16 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from allauth.account.views import login, logout, signup
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("accounts/", include("accounts.urls")),
-    path("accounts/", include("allauth.urls")),
+
+    path("login/", login, name="account_login"), 
+    path("logout/", logout, name="account_logout"), 
+    path("signup/", signup, name="account_signup"), 
 
     path('', include("customer.urls")),
     path('restaurant/', include("restaurant.urls")),
