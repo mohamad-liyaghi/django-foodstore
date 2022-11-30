@@ -9,7 +9,7 @@
   <h3>Full name: {{ profile.first_name }} {{ profile.last_name }}</h3>
   <h3>County: {{ profile.country }}/{{ profile.city }}</h3>
   <hr>
-  {% if request.user == profile.user or request.user.role == 'a' or request.user.role == 's' %}
+  {% if request.user == profile.user or request.user.is_admin %}
         <h5>Detailed address: {{ profile.detailed_address }}</h5>
         <h5>Phone number: {{ profile.phone_number }}</h5>
         <h5>Passport number: {{ profile.passport_number }}</h5>

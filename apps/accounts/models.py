@@ -35,6 +35,10 @@ class User(AbstractUser):
     @property
     def is_blocked(self):
         return bool(self.role == self.Role.BLOCKED)
+    
+    @property
+    def is_admin(self):
+        return bool(self.role in ["s", "a"])
 
     
 class Profile(models.Model):
