@@ -8,6 +8,8 @@
                   Account
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="{% url 'accounts:profile' %}">Profile</a>
+                  <a class="dropdown-item" href="{% url 'accounts:exchange-money' %}">Exchange</a>
                     {% if request.user.add_food %}
                         <a class="dropdown-item" href="{% url 'restaurant:restaurant-dashboard' %}">Dashboard</a>
                     {% endif %}
