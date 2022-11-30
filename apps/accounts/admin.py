@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from accounts.models import User, Profile
+from accounts.models import User, Profile, Request
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
@@ -25,3 +25,7 @@ class UserAdmin(BaseUserAdmin):
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ("user", "phone_number", "passport_number")
+
+@admin.register(Request)
+class RequestAdmin(admin.ModelAdmin):
+    list_display = ["user", "token", 'status', "date"]
