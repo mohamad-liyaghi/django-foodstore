@@ -8,7 +8,8 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import RequestForm
 
-class Profile(LoginRequiredMixin, UpdateView):
+
+class ProfileView(LoginRequiredMixin, UpdateView):
     '''
         Profile page. 
         Only the profile owner can update this page.
@@ -46,7 +47,7 @@ class MoneyView(LoginRequiredMixin, View):
         return HttpResponse("20 coins added to your balance.")
 
 
-class AddRequestView(LoginRequiredMixin, FormView):
+class RequestCreateView(LoginRequiredMixin, FormView):
     '''Request to become admin'''
 
     def dispatch(self, request, *args, **kwargs):
@@ -70,20 +71,20 @@ class AddRequestView(LoginRequiredMixin, FormView):
         return super().dispatch(request, *args, **kwargs)
     
 
-    template_name = "request/add-request.html"
+    template_name = "request/request-add.html"
     form_class = RequestForm
     success_url = reverse_lazy("customer:home")
 
 
     def get_form_kwargs(self):
-        kwargs = super(AddRequestView, self).get_form_kwargs()
+        kwargs = super(RequestCreateView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
     def form_valid(self, form):
         form.save()
         messages.success(self.request, "Request sent, wait for results.")
-        return super(AddRequestView, self).form_valid(form)
+        return super(RequestCreateView, self).form_valid(form)
         
         
 class RequestListView(LoginRequiredMixin, ListView):
