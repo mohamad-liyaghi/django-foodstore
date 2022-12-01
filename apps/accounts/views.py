@@ -1,9 +1,9 @@
-from django.views.generic import UpdateView, View, FormView
+from django.views.generic import UpdateView, View, FormView, ListView
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib import  messages
 
-from accounts.models import Profile as ProfileModel
+from accounts.models import Profile as ProfileModel, Request
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import RequestForm
@@ -86,4 +86,18 @@ class AddRequestView(LoginRequiredMixin, FormView):
         return super(AddRequestView, self).form_valid(form)
         
         
+class RequestListView(LoginRequiredMixin, ListView):
+    '''
+        List of requests.
+        Admins see all requests.
+        Normal Users just see their own requests
+    '''
 
+    template_name = "request/request-list.html"
+    context_object_name = "requests"
+
+    def get_queryset(self):
+        if self.request.user.is_admin:
+            return Request.objects.filter(status="p")
+
+        return Request.objects.filter(user=self.request.user)

@@ -23,6 +23,7 @@
                     {% if not request.user.restaurant %}
                         <a class="dropdown-item" href="{% url 'restaurant:register-restaurant' %}">Register Restaurant</a>
                     {% endif %}
+                    <a class="dropdown-item" href="{% url 'accounts:request-list' %}">Requests</a>
                     <a class="dropdown-item" href="{% url 'account_logout' %}">Logout</a>
                 </div>
           </li>
