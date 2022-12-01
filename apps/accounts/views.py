@@ -1,9 +1,12 @@
-from django.views.generic import UpdateView, View
-from django.shortcuts import get_object_or_404
+from django.views.generic import UpdateView, View, FormView
+from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
+from django.contrib import  messages
+
 from accounts.models import Profile as ProfileModel
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import RequestForm
 
 class Profile(LoginRequiredMixin, UpdateView):
     '''
@@ -41,3 +44,46 @@ class MoneyView(LoginRequiredMixin, View):
         request.user.balance = request.user.balance + 20
         request.user.save()
         return HttpResponse("20 coins added to your balance.")
+
+
+class AddRequestView(LoginRequiredMixin, FormView):
+    '''Request to become admin'''
+
+    def dispatch(self, request, *args, **kwargs):
+        '''Admin users can blocked users can not add request.'''
+
+        # admin users can not request to become an admin
+        if self.request.user.is_admin:
+            messages.success(self.request, "You are already an admin.")
+            return redirect("customer:home")
+        
+        # check if user is blocked or even there is a blocked request
+        elif self.request.user.is_blocked or self.request.user.requests.filter(status="b"):
+            messages.success(self.request, "Blocked users can not request.")
+            return redirect("customer:home")
+        
+        # check if user has a pending request
+        elif self.request.user.requests.filter(status="p"):
+            messages.success(self.request, "You have already a pending request.")
+            return redirect("customer:home")
+        
+        return super().dispatch(request, *args, **kwargs)
+    
+
+    template_name = "request/add-request.html"
+    form_class = RequestForm
+    success_url = reverse_lazy("customer:home")
+
+
+    def get_form_kwargs(self):
+        kwargs = super(AddRequestView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, "Request sent, wait for results.")
+        return super(AddRequestView, self).form_valid(form)
+        
+        
+
