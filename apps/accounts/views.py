@@ -142,3 +142,32 @@ class RequestDetailView(LoginRequiredMixin, UpdateView):
 
         messages.success(self.request, "You can only update requests with pending status.")
         return redirect("customer:home")
+
+
+class RequestStatusView(LoginRequiredMixin, View):
+    '''Change a requests status (accept, decline or block)'''
+    
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_admin:
+            return super().dispatch(request, *args, **kwargs)
+        
+        if not self.kwargs["status"] in ["a", "r", "b"]:
+            messages.success(self.request, "Please insert a valid operation.")
+            return redirect("customer:home")
+        
+        messages.success(self.request, "Only admin users can access this page.")
+        return redirect("customer:home")
+    
+
+    def get(self, request, request_token, status):
+        request = get_object_or_404(Request, token=request_token, status="p")
+
+        request.status = status
+        if status == "a":
+            request.user.role = "a"
+
+        request.save()
+        request.user.save()
+
+        messages.success(self.request, f"Request status changed to {status}.")
+        return redirect("accounts:request-list")

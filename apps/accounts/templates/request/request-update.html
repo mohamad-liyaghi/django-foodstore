@@ -15,9 +15,9 @@
     <p>Description: <br> {{ request.description }}</p><hr>
     
     {% if user.is_admin and request.status == 'p'%}
-        <a class="btn btn-success" href="#">Accept</a>
-        <a class="btn btn-danger" href="#">Decline</a>
-        <a class="btn btn-secondary" href="#">Block</a>
+        <a class="btn btn-success" href="{% url 'accounts:request-status' request.token 'a' %}">Accept</a>
+        <a class="btn btn-danger" href="{% url 'accounts:request-status' request.token 'r' %}">Decline</a>
+        <a class="btn btn-secondary" href="{% url 'accounts:request-status' request.token 'b' %}">Block</a>
         <hr>
     {% endif %}
 
