@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ProfileView, MoneyView, RequestCreateView, RequestListView
+from .views import ProfileView, MoneyView, RequestCreateView, RequestListView, RequestDetailView
 
 app_name = "accounts"
 
@@ -9,5 +9,6 @@ urlpatterns = [
     path("exchange/", MoneyView.as_view(), name="exchange-money"), 
 
     path("add-request/", RequestCreateView.as_view(), name="add-request"),
-    path('request-list/', RequestListView.as_view(), name="request-list")
+    path('request-list/', RequestListView.as_view(), name="request-list"),
+    path('request-detail/<str:token>/', RequestDetailView.as_view(), name="requst-detail"),
 ]

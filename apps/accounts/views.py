@@ -102,3 +102,28 @@ class RequestListView(LoginRequiredMixin, ListView):
             return Request.objects.filter(status="p")
 
         return Request.objects.filter(user=self.request.user)
+
+
+class RequestDetailView(LoginRequiredMixin, UpdateView):
+    '''
+        Request detail page.
+        Admins and request owner can access this page.
+        Admins can accept/decline/block this request 
+        Request owner can see or update(When its pending).
+    '''
+    
+    def dispatch(self, request, *args, **kwargs):
+        '''Admin users and request owner can access this page.'''
+
+        if self.request.user.is_admin or self.get_object().user == self.request.user:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.success(self.request, "You can not access this page.")
+        return redirect("customer:home")
+
+    template_name = "request/request-update.html"
+    fields = []
+    
+    def get_object(self):
+        return get_object_or_404(Request, token=self.kwargs["token"])
+

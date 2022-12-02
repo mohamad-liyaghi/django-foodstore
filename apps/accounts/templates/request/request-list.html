@@ -23,7 +23,8 @@
             <td><a href="{% url 'accounts:profile' request.user.userid %}">{{ request.user }}</a></td>
             <td>{{ request.get_status_display  }}</td>
             <td>{{ request.date }}</td>
-            <td><center><a class="btn btn-secondary" href="#">{{ request.token }}</a></center></td>
+            <td><center><a class="btn btn-secondary" href="{% url 'accounts:requst-detail' request.token %}">
+                          {{ request.token }}</a></center></td>
         </tr>
       {% empty %}
         <h3>No request available.</h3>
