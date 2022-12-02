@@ -10,7 +10,9 @@
 <div class="container">
     <h5>User: <a href="{% url 'accounts:profile' request.user.userid %}">{{ request.user }}</a></h5>
     <h5>Status: {{ request.get_status_display }}</h5>
-    <h5>Attachment: <a href="{{ request.attachment.url }}">Click here</a></h5>
+    {% if request.attachment %}
+        <h5>Attachment: <a href="{{ request.attachment.url }}">Click here</a></h5>
+    {% endif %}
     <hr>
     <p>Description: <br> {{ request.description }}</p><hr>
     
