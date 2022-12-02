@@ -1,0 +1,37 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ request.token }}{% endblock %}
+
+{% block body %}
+<h3>{{ request.token }}</h3>
+<hr>
+
+<div class="container">
+    <h5>User: <a href="{% url 'accounts:profile' request.user.userid %}">{{ request.user }}</a></h5>
+    <h5>Status: {{ request.get_status_display }}</h5>
+    {% if request.attachment %}
+        <h5>Attachment: <a href="{{ request.attachment.url }}">Click here</a></h5>
+    {% endif %}
+    <hr>
+    <p>Description: <br> {{ request.description }}</p><hr>
+    
+    {% if user.is_admin and request.status == 'p'%}
+        <a class="btn btn-success" href="{% url 'accounts:request-status' request.token 'a' %}">Accept</a>
+        <a class="btn btn-danger" href="{% url 'accounts:request-status' request.token 'r' %}">Decline</a>
+        <a class="btn btn-secondary" href="{% url 'accounts:request-status' request.token 'b' %}">Block</a>
+        <hr>
+    {% endif %}
+
+    {% if user == request.user and request.status == 'p' %}
+        <h3>Update</h3><hr>
+        <form method="post" enctype='multipart/form-data'>
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button class="btn btn-success" type="submit">Update</button>
+        </form>
+
+    {% endif %}
+</div>
+
+{% endblock body %}

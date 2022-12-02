@@ -1,0 +1,35 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Request List{% endblock title %}
+
+{% block body %}
+<h2>Request List</h2><a href="{% url 'accounts:add-request' %}">New request</a>
+ <hr>
+<table class="table table-bordered">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">User</th>
+        <th scope="col">Status</th>
+        <th scope="col">Date</th>
+        <th scope="col">Detail</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for request in requests %}
+        <tr>
+            <th scope="row">1</th>
+            <td><a href="{% url 'accounts:profile' request.user.userid %}">{{ request.user }}</a></td>
+            <td>{{ request.get_status_display  }}</td>
+            <td>{{ request.date }}</td>
+            <td><center><a class="btn btn-secondary" href="{% url 'accounts:request-detail' request.token %}">
+                          {{ request.token }}</a></center></td>
+        </tr>
+      {% empty %}
+        <h3>No request available.</h3>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock body %}

@@ -1,5 +1,5 @@
 from django import forms
-from accounts.models import User
+from accounts.models import User, Request
 
 import random
 
@@ -18,4 +18,19 @@ class RegisterUserForm(forms.ModelForm):
             user.save()
             
         return user
+
+
+class RequestForm(forms.ModelForm):
+    class Meta:
+        model = Request
+        fields = ["attachment", "description"]
     
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(RequestForm, self).__init__(*args, **kwargs)
+    
+    def save(self, commit=True):
+        request = super().save(commit=False)
+        request.user = self.user
+        request = request.save()
+        return request
