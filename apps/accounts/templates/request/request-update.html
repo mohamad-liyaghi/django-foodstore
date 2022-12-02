@@ -20,6 +20,16 @@
         <a class="btn btn-secondary" href="#">Block</a>
         <hr>
     {% endif %}
+
+    {% if user == request.user and request.status == 'p' %}
+        <h3>Update</h3><hr>
+        <form method="post" enctype='multipart/form-data'>
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button class="btn btn-success" type="submit">Update</button>
+        </form>
+
+    {% endif %}
 </div>
 
 {% endblock body %}

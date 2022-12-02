@@ -111,7 +111,7 @@ class RequestDetailView(LoginRequiredMixin, UpdateView):
         Admins can accept/decline/block this request 
         Request owner can see or update(When its pending).
     '''
-    
+
     def dispatch(self, request, *args, **kwargs):
         '''Admin users and request owner can access this page.'''
 
@@ -122,8 +122,23 @@ class RequestDetailView(LoginRequiredMixin, UpdateView):
         return redirect("customer:home")
 
     template_name = "request/request-update.html"
-    fields = []
+    fields = ["attachment", "description"]
     
     def get_object(self):
         return get_object_or_404(Request, token=self.kwargs["token"])
+    
+    def get_success_url(self):
+        return reverse_lazy("accounts:request-detail",
+                            kwargs={"token" : self.kwargs.get("token")})
+    
+    def post(self, request, *args, **kwargs):
+        '''Check if user is trying to update a pending request.'''
 
+        if self.get_object().status == "p" \
+            and self.get_object().user == self.request.user:
+
+            messages.success(self.request, "Request status updated.")
+            return super().post(request, *args, **kwargs)
+
+        messages.success(self.request, "You can only update requests with pending status.")
+        return redirect("customer:home")
