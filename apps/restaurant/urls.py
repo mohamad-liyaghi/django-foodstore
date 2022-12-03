@@ -1,7 +1,7 @@
 from django.urls import path
-from .views.restaurant_views import (RegisterRestaurantView, UpdateRestaurantView,
+from .views.restaurant import (RegisterRestaurantView, UpdateRestaurantView,
                                      ProfileRestaurant, DashBoardRestaurant, OrdersRestaurant, OrderSending, OrderArrived)
-from .views.food_views import (CreateFoodView, UpdateFoodView, DetailFoodView, ListFoodView)
+from .views.food import (CreateFoodView, UpdateFoodView, DetailFoodView, ListFoodView)
 
 app_name = "restaurant"
 
