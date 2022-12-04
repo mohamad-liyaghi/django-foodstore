@@ -1,38 +1,53 @@
 from django.views.generic import FormView, UpdateView, DetailView, TemplateView, ListView, View
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
-from django.template.defaultfilters import slugify
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+from django.urls import reverse, reverse_lazy
 
-from restaurant.forms import RegisterRestaurantForm
-from restaurant.mixins import RestaurantRegisterMixin, RestaurantUpdateMixin, OrderListMixin, OrderArivedMixin
-from accounts.models import User
+from restaurant.forms import RestaurantForm
+from restaurant.mixins import RestaurantUpdateMixin, OrderListMixin, OrderArivedMixin
 from restaurant.models import Restaurant, Food
 from customer.models import Order
 
 
-class RegisterRestaurantView(LoginRequiredMixin, RestaurantRegisterMixin, FormView):
+class RegisterRestaurantView(LoginRequiredMixin, FormView):
     '''
         Register a new restaurant
     '''
     template_name = "restaurant/register-restaurant.html"
-    form_class = RegisterRestaurantForm
+    form_class = RestaurantForm
+    success_url = reverse_lazy("customer:home")
+
+
+    def dispatch(self, request, *args, **kwargs):
+        '''Check if user doesnt have a blocked or pending request.'''
+        
+        if self.request.user.restaurant.filter(status="p"):
+            messages.success(self.request, "You have a pending request, please wait for its result.", "warning")
+            return redirect("customer:home")
+        
+        if self.request.user.restaurant.filter(status="b"):
+            messages.success(self.request, "You are blocked. You can not add restaurant.", "danger")
+            return redirect("customer:home")
+
+        return super().dispatch(request, *args, **kwargs)
+
 
     def form_valid(self, form):
-        form = self.form_class(self.request.POST, self.request.FILES)
-        user = User.objects.filter(email= self.request.user.email, full_name= self.request.user.full_name).first()
-        user.add_food = True
-        form = form.save(commit=False)
-        form.owner = self.request.user
-        form.slug = slugify(form.name)
         form.save()
-        user.save()
-        messages.success(self.request,"restaurant registered successfully", "success")
-        return redirect("restaurant:restaurant-dashboard")
+        messages.success(self.request, "Your restaurant request is submitted. wait for results.", "success")
+        return super().form_valid(form)
+
 
     def form_invalid(self, form):
         messages.success(self.request, "sth went wrong with your information...", "alert")
+    
+
+    def get_form_kwargs(self):
+        kwargs = super(RegisterRestaurantView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
 class UpdateRestaurantView(LoginRequiredMixin, RestaurantUpdateMixin, UpdateView):
     '''
