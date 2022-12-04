@@ -60,14 +60,31 @@ class UpdateRestaurantView(LoginRequiredMixin, RestaurantUpdateMixin, UpdateView
         return get_object_or_404(Restaurant, pk=self.kwargs["pk"],
                                          slug=self.kwargs["slug"], owner= self.request.user)
 
-class ProfileRestaurant(DetailView):
+class RestaurantProfileView(DetailView):
     '''
         Restaurant profile page
     '''
     template_name = "restaurant/profile-restaurant.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        '''
+            Check if restaurant is accepted 
+            if not only admins and requested user can access that page
+        '''
+
+        if self.get_object().status != "a":
+
+                if request.user.is_authenticated:
+                    if request.user == self.get_object().owner or request.user.role in ["a", "s"]:
+                        return super().dispatch(request, *args, **kwargs)
+                        
+                return redirect("customer:home")
+
+        return super().dispatch(request, *args, **kwargs)
+            
+
     def get_object(self):
-        return get_object_or_404(Restaurant, pk=self.kwargs["pk"], slug=self.kwargs["slug"])
+        return get_object_or_404(Restaurant, token=self.kwargs["token"])
 
 class DashBoardRestaurant(TemplateView):
     '''
