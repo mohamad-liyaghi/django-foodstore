@@ -16,4 +16,13 @@
 <h5>{{object.email}}</h5>
 <hr>
 <small>owner: {{object.owner}}</small>
+
+{% if request.user == object.owner and object.status == 'p' %}
+<hr> <br><h3>Update:</h3><br>
+
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-success">Update</button>
+</form>
+{% endif %}
 {% endblock body %}

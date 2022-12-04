@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.urls import reverse, reverse_lazy
 
 from restaurant.forms import RestaurantForm
-from restaurant.mixins import RestaurantUpdateMixin, OrderListMixin, OrderArivedMixin
+from restaurant.mixins import OrderListMixin, OrderArivedMixin
 from restaurant.models import Restaurant, Food
 from customer.models import Order
 
@@ -15,7 +15,7 @@ class RegisterRestaurantView(LoginRequiredMixin, FormView):
     '''
         Register a new restaurant
     '''
-    template_name = "restaurant/register-restaurant.html"
+    template_name = "restaurant/restaurant-register.html"
     form_class = RestaurantForm
     success_url = reverse_lazy("customer:home")
 
@@ -49,22 +49,14 @@ class RegisterRestaurantView(LoginRequiredMixin, FormView):
         kwargs['user'] = self.request.user
         return kwargs
 
-class UpdateRestaurantView(LoginRequiredMixin, RestaurantUpdateMixin, UpdateView):
-    '''
-        Update restaurant page
-    '''
-    template_name = "restaurant/update-restaurant.html"
-    fields = ["name", "picture", "description", "country", "city", "detailed_address", "email"]
 
-    def get_object(self):
-        return get_object_or_404(Restaurant, pk=self.kwargs["pk"],
-                                         slug=self.kwargs["slug"], owner= self.request.user)
-
-class RestaurantProfileView(DetailView):
+class RestaurantProfileView(LoginRequiredMixin, UpdateView):
     '''
-        Restaurant profile page
+        Restaurant profile and update page.
     '''
-    template_name = "restaurant/profile-restaurant.html"
+    template_name = "restaurant/restaurant-profile.html"
+    fields = ["name", "picture", "description", "country", "city",
+                 "detailed_address", "email"]
 
     def dispatch(self, request, *args, **kwargs):
         '''
@@ -77,7 +69,7 @@ class RestaurantProfileView(DetailView):
                 if request.user.is_authenticated:
                     if request.user == self.get_object().owner or request.user.role in ["a", "s"]:
                         return super().dispatch(request, *args, **kwargs)
-                        
+
                 return redirect("customer:home")
 
         return super().dispatch(request, *args, **kwargs)
@@ -86,6 +78,21 @@ class RestaurantProfileView(DetailView):
     def get_object(self):
         return get_object_or_404(Restaurant, token=self.kwargs["token"])
 
+    def post(self, request, *args, **kwargs):
+        '''Check if objects status is pending'''
+
+        if request.user == self.get_object().owner \
+            and self.get_object().status == "p":
+            messages.success(self.request, "Restaurant updated.", "success")
+            return super().post(request, *args, **kwargs)
+        
+        messages.success(self.request, "couldnt update the object.", "danger")
+        return redirect("customer:home")
+    
+    def get_success_url(self):
+        return reverse("restaurant:restaurant-profile", kwargs={"token" : self.get_object().token})
+        
+        
 class DashBoardRestaurant(TemplateView):
     '''
         Dashboard page

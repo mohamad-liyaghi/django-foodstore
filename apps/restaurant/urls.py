@@ -1,5 +1,5 @@
 from django.urls import path
-from .views.restaurant import (RegisterRestaurantView, UpdateRestaurantView,
+from .views.restaurant import (RegisterRestaurantView,
                                      RestaurantProfileView, DashBoardRestaurant, OrdersRestaurant, OrderSending, OrderArrived)
 from .views.food import (CreateFoodView, UpdateFoodView, DetailFoodView, ListFoodView)
 
@@ -13,7 +13,6 @@ urlpatterns = [
     path("register/", RegisterRestaurantView.as_view(), name="register-restaurant"),
     path("create-food/", CreateFoodView.as_view(), name="create-food"),
 
-    path("update/<int:pk>/<str:slug>/", UpdateRestaurantView.as_view(), name="restaurant-update"),
     path("update-food/<int:pk>/<str:slug>/", UpdateFoodView.as_view(), name="update-food"),
 
     path("detail-food/<int:pk>/<str:slug>/", DetailFoodView.as_view(), name="detail-food"),
