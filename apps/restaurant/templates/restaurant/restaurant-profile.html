@@ -33,6 +33,10 @@
     <button type="submit" class="btn btn-success">Update</button>
 </form>
 
+{% endif %}
 
+{% if request.user == object.owner %}
+    <hr>
+    <a class="btn btn-danger" href="{% url 'restaurant:delete-restaurant' object.token %}">Delete restaurant</a>
 {% endif %}
 {% endblock body %}

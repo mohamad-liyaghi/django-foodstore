@@ -1,4 +1,4 @@
-from django.views.generic import FormView, UpdateView, DetailView, TemplateView, ListView, View
+from django.views.generic import FormView, UpdateView, DeleteView, TemplateView, ListView, View
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -141,6 +141,17 @@ class RestaurantRequestStatusView(LoginRequiredMixin, View):
         return redirect("restaurant:restaurant-request-list")
 
 
+
+class RestaurantDeleteView(LoginRequiredMixin, DeleteView):
+    '''Delete a restaurant'''
+    template_name = "restaurant/restaurant-delete.html"
+    context_object_name = "restaurant"
+    success_url = reverse_lazy("customer:home")
+    #TODO check if there is any order
+
+    def get_object(self):
+        return get_object_or_404(self.request.user.restaurant, 
+                                token=self.kwargs["token"])
 
 
 class DashBoardRestaurant(TemplateView):
