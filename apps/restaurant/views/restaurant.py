@@ -50,6 +50,7 @@ class RegisterRestaurantView(LoginRequiredMixin, FormView):
         return kwargs
 
 
+
 class RestaurantProfileView(LoginRequiredMixin, UpdateView):
     '''
         Restaurant profile and update page.
@@ -92,7 +93,24 @@ class RestaurantProfileView(LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         return reverse("restaurant:restaurant-profile", kwargs={"token" : self.get_object().token})
         
-        
+
+
+class RestaurantRequestListView(LoginRequiredMixin, ListView):
+    '''
+        List of restaurant requests.
+    '''
+
+    template_name = "restaurant/restaurant-request-list.html"
+    context_object_name = "requests"
+
+    def get_queryset(self):
+        if self.request.user.is_admin:
+            return Restaurant.objects.filter(status="p")
+
+        return Restaurant.objects.filter(owner=self.request.user)
+
+
+
 class DashBoardRestaurant(TemplateView):
     '''
         Dashboard page
