@@ -17,6 +17,14 @@
 <hr>
 <small>owner: {{object.owner}}</small>
 
+{% if request.user.is_admin and request.user != object.owner and object.status == 'p'%}
+    <hr>    
+        <a class="btn btn-success" href="{% url 'restaurant:restaurant-status' object.token "a" %}">Accept</a>
+        <a class="btn btn-danger" href="{% url 'restaurant:restaurant-status' object.token "d" %}">Decline</a>
+        <a class="btn btn-secondary" href="{% url 'restaurant:restaurant-status' object.token "b" %}">Block</a>
+        <hr>
+{% endif %}
+
 {% if request.user == object.owner and object.status == 'p' %}
 <hr> <br><h3>Update:</h3><br>
 
@@ -24,5 +32,7 @@
     {{ form|crispy }}
     <button type="submit" class="btn btn-success">Update</button>
 </form>
+
+
 {% endif %}
 {% endblock body %}

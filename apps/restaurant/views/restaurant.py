@@ -17,7 +17,7 @@ class RegisterRestaurantView(LoginRequiredMixin, FormView):
     '''
     template_name = "restaurant/restaurant-register.html"
     form_class = RestaurantForm
-    success_url = reverse_lazy("customer:home")
+    success_url = reverse_lazy("restaurant:restaurant-request-list")
 
 
     def dispatch(self, request, *args, **kwargs):
@@ -108,6 +108,38 @@ class RestaurantRequestListView(LoginRequiredMixin, ListView):
             return Restaurant.objects.filter(status="p")
 
         return Restaurant.objects.filter(owner=self.request.user)
+
+
+
+class RestaurantRequestStatusView(LoginRequiredMixin, View):
+    '''Change a restaurants status (accept, decline or block)'''
+    
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_admin:
+            return super().dispatch(request, *args, **kwargs)
+        
+        if not self.kwargs["status"] in ["a", "r", "b"]:
+            messages.success(self.request, "Please insert a valid operation.", 'warning')
+            return redirect("customer:home")
+        
+        messages.success(self.request, "Only admin users can access this page.", "warning")
+        return redirect("customer:home")
+    
+
+    def get(self, request, restaurant_token, status):
+
+        restaurant = get_object_or_404(Restaurant, token=self.kwargs["restaurant_token"], status="p")
+
+        if restaurant.owner == self.request.user:
+            messages.success(self.request, "You can not accept your own request.", "warning")
+            return redirect("customer:home")
+
+        restaurant.status = status
+        restaurant.save()
+
+        messages.success(self.request, f"Request status changed to {status}.")
+        return redirect("restaurant:restaurant-request-list")
+
 
 
 
