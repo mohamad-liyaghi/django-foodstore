@@ -1,0 +1,42 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{object.name}}'s Profile{% endblock title %}
+
+{% block body %}
+<h1 style="display: inline-block;">{{object.name}}</h1>
+<img src="{{object.picture.url}}" style="width:5cm; float: right;">
+<hr>
+<p>{{object.description}}</p>
+<hr>
+<h4>Location</h4>
+<h5>{{object.country}} - {{object.city}} - {{object.detailed_address}}</h5>
+<hr>
+<h4>Email</h4>
+<h5>{{object.email}}</h5>
+<hr>
+<small>owner: {{object.owner}}</small>
+
+{% if request.user.is_admin and request.user != object.owner and object.status == 'p'%}
+    <hr>    
+        <a class="btn btn-success" href="{% url 'restaurant:restaurant-status' object.token "a" %}">Accept</a>
+        <a class="btn btn-danger" href="{% url 'restaurant:restaurant-status' object.token "d" %}">Decline</a>
+        <a class="btn btn-secondary" href="{% url 'restaurant:restaurant-status' object.token "b" %}">Block</a>
+        <hr>
+{% endif %}
+
+{% if request.user == object.owner and object.status == 'p' %}
+<hr> <br><h3>Update:</h3><br>
+
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-success">Update</button>
+</form>
+
+{% endif %}
+
+{% if request.user == object.owner %}
+    <hr>
+    <a class="btn btn-danger" href="{% url 'restaurant:delete-restaurant' object.token %}">Delete restaurant</a>
+{% endif %}
+{% endblock body %}

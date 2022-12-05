@@ -1,7 +1,8 @@
 from django.urls import path
-from .views.restaurant_views import (RegisterRestaurantView, UpdateRestaurantView,
-                                     ProfileRestaurant, DashBoardRestaurant, OrdersRestaurant, OrderSending, OrderArrived)
-from .views.food_views import (CreateFoodView, UpdateFoodView, DetailFoodView, ListFoodView)
+from .views.restaurant import (RegisterRestaurantView,
+                                     RestaurantProfileView, DashBoardRestaurant, RestaurantRequestListView,
+                                     RestaurantRequestStatusView, RestaurantDeleteView, OrdersRestaurant, OrderSending, OrderArrived)
+from .views.food import (CreateFoodView, UpdateFoodView, DetailFoodView, ListFoodView)
 
 app_name = "restaurant"
 
@@ -12,12 +13,15 @@ urlpatterns = [
 
     path("register/", RegisterRestaurantView.as_view(), name="register-restaurant"),
     path("create-food/", CreateFoodView.as_view(), name="create-food"),
+    path("requests/", RestaurantRequestListView.as_view(), name='restaurant-request-list'),
+    path('restaurant-status/<str:restaurant_token>/<str:status>/', RestaurantRequestStatusView.as_view(), name="restaurant-status"),
+    
+    path("delete-restaurant/<str:token>/", RestaurantDeleteView.as_view(), name="delete-restaurant"),
 
-    path("update/<int:pk>/<str:slug>/", UpdateRestaurantView.as_view(), name="restaurant-update"),
     path("update-food/<int:pk>/<str:slug>/", UpdateFoodView.as_view(), name="update-food"),
 
     path("detail-food/<int:pk>/<str:slug>/", DetailFoodView.as_view(), name="detail-food"),
-    path("profile/<int:pk>/<str:slug>/", ProfileRestaurant.as_view(), name="restaurant-profile"),
+    path("profile/<str:token>/", RestaurantProfileView.as_view(), name="restaurant-profile"),
 
     path('orders/', OrdersRestaurant.as_view(), name= "restaurant-orders"),
     path('order-send/<int:id>/<int:orderid>/', OrderSending.as_view(), name="food-sending"),

@@ -3,29 +3,54 @@ from django.contrib.contenttypes.fields import GenericRelation
 from star_ratings.models import Rating
 from django.urls import reverse
 from accounts.models import User
-# Create your models here.
+from accounts.utils.validators import validate_file_size
+from accounts.utils.token_generator import random_number
+
 
 class Restaurant(models.Model):
-    name = models.CharField(max_length= 50)
-    slug = models.SlugField(max_length=50, unique=True, blank=True)
     
-    picture = models.ImageField(upload_to= "restaurant/profile")
+    class Status(models.TextChoices):
+        '''Restaurant Status'''
+        PENDING = ("p", "pending")
+        ACCEPTED = ("a", "Accepted")
+        REJECTED = ("r", "Rejected")
+        BLOCKED = ("b", "Blocked")
+
+    name = models.CharField(max_length= 50)    
+    
+    picture = models.ImageField(upload_to= "restaurant/profile",
+                                    validators=[validate_file_size,])
     description = models.TextField()
 
-    country = models.CharField(max_length=30, blank=True)
-    city = models.CharField(max_length=30, blank=True)
+    country = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, blank=True)
     detailed_address = models.CharField(max_length=120, blank=True)
 
-    owner = models.OneToOneField(User,on_delete=models.CASCADE ,related_name="restaurant", blank=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="restaurant")
+
     email = models.EmailField(max_length=70, unique=True)
+
+    status = models.CharField(max_length=1, choices=Status.choices, default=Status.PENDING)
+    token = models.CharField(max_length=15, default=random_number)
+    date_registered = models.DateTimeField(auto_now_add=True)
 
     ratings = GenericRelation(Rating)
 
+    @property
+    def is_accepted(self):
+        return bool(self.status == "a")
+    
+    @property
+    def is_blocked(self):
+        return bool(self.status == "b")
+
     def get_absolute_url(self):
-        return reverse("restaurant:restaurant-profile", kwargs={'pk': self.pk, "slug" : self.slug})
+        return reverse("restaurant:restaurant-profile",
+                             kwargs={"id" : self.id, "token" : self.token})
 
     def __str__(self):
         return  self.name
+    
 
 
 

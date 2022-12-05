@@ -1,0 +1,35 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Request List{% endblock title %}
+
+{% block body %}
+<h2>Restaurant Request List</h2><a href="{% url 'restaurant:register-restaurant' %}">New request</a>
+ <hr>
+<table class="table table-bordered">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">User</th>
+        <th scope="col">Status</th>
+        <th scope="col">Restaurant name</th>
+        <th scope="col">Detail</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for request in requests %}
+        <tr>
+            <th scope="row">1</th>
+            <td><a href="{% url 'accounts:profile' request.owner.userid %}">{{ request.owner }}</a></td>
+            <td>{{ request.get_status_display  }}</td>
+            <td>{{ request.name }}</td>
+            <td><center><a class="btn btn-secondary" href="{% url 'restaurant:restaurant-profile' request.token %}">
+                          {{ request.token }}</a></center></td>
+        </tr>
+      {% empty %}
+        <h3>No request available.</h3>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock body %}
