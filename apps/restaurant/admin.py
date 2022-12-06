@@ -6,9 +6,8 @@ from .models import Restaurant, Food, Category
 class RestaurantAdmin(admin.ModelAdmin):
     list_display = ("name", "owner", "email")
 
+@admin.register(Food)
 class FoodAdmin(admin.ModelAdmin):
-    list_display = ("name" ,"price", "is_available")
-    prepopulated_fields = {"slug" : ("name", "provider")}
+    list_display = ("name", "price", "is_available")
 
-admin.site.register(Food, FoodAdmin)
 admin.site.register(Category)

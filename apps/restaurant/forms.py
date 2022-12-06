@@ -22,4 +22,4 @@ class RestaurantForm(forms.ModelForm):
 class FoodForm(forms.ModelForm):
     class Meta:
         model = Food
-        fields = ("name", "slug", "picture", "description", "category", "provider", "inventory", "price", "is_available")
+        fields = ("name", "picture", "description", "category", "provider", "inventory", "price")
