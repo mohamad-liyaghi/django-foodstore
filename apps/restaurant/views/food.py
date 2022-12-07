@@ -11,22 +11,29 @@ from restaurant.forms import FoodForm
 
 class CreateFoodView(LoginRequiredMixin, AddFoodMixin, FormView):
     '''
-        Create a new food
+        Add food to database
     '''
 
     form_class = FoodForm
-    template_name = "food/create-food.html"
+    template_name = "food/add-food.html"
 
     def form_valid(self, form):
-        form_data = self.form_class(self.request.POST, self.request.FILES)
-        form_data = form.save(commit=False)
-        form_data.provider = self.request.user.restaurant
-        form_data.slug = slugify(form_data.name) + slugify(form_data.provider)
-        form_data.save()
+        form.save()
         form.save_m2m()
         messages.success(self.request, "food created successfully")
         return  redirect("restaurant:list-food")
+    
 
+    def form_invalid(self, form):
+        messages.success(self.request, "Sth went wrong with your information", "danger")
+        return  redirect("restaurant:list-food")
+
+
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(CreateFoodView, self).get_form_kwargs()
+        kwargs['restaurants'] = self.request.user.restaurant.all()
+        return kwargs
+        
 
 class UpdateFoodView(LoginRequiredMixin, FoodUpdateMixin, UpdateView):
     '''

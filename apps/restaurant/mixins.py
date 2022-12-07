@@ -1,4 +1,6 @@
 from django.shortcuts import redirect, get_object_or_404
+from django.contrib import  messages
+
 
 from customer.models import Order
 from accounts.models import User
@@ -17,11 +19,16 @@ class RestaurantUpdateMixin():
 
         return super().dispatch(request, *args, **kwargs)
 
-class AddFoodMixin(RestaurantUpdateMixin):
+class AddFoodMixin():
     '''
         Mixin for adding food
     '''
-    pass
+    def dispatch(self, request, *args, **kwargs):
+        if self.request.user.restaurant.filter(status="a").count() == 0:
+            messages.success(self.request, "First you should register a restaurant", "warning")
+            return redirect("restaurant:register-restaurant")
+
+        return super().dispatch(request, *args, **kwargs)
 
 class FoodUpdateMixin(RestaurantUpdateMixin):
     '''
