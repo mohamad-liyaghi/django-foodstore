@@ -1,0 +1,33 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block title %}{{food.name}} | {{ food.provider }}{% endblock title %}
+
+
+{% block body %}
+<h1 style="display: inline-block;">{{ food.name }}</h1>
+
+{% if  food.picture  %}
+    <img src="{{ food.picture.url }}" style="width:5cm; float: right;">
+{% endif %}
+
+<hr>
+<br><h5>{{food.description}}</h5>
+<hr>
+<h5>Provider: <a href="{% url 'restaurant:restaurant-profile' food.provider.token %}">{{ food.provider }}</a></h5>
+<hr><br>
+
+{% if food.is_available %}
+    <h5>{{food.inventory}} in stock</h5><hr>
+    <h5>Price: {{food.price}}</h5><hr>
+    <a class="btn btn-success" href="{% url 'customer:cart-add' food.id %}">Add to cart</a>
+{% else %}
+<h3>This item is currently unavailable</h3>
+{% endif %}
+<br><br>
+<small>Any question? contact: {{food.provider.email}}</small>
+
+<hr>
+{% comment "#TODO add star ratings " %}{% endcomment %}
+{% endblock body %}

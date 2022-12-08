@@ -55,10 +55,10 @@ class Restaurant(models.Model):
 
 
 class Food(models.Model):
-    name = models.CharField(max_length= 10)
+    name = models.CharField(max_length= 120)
     picture = models.ImageField(upload_to="foods/")
 
-    description = models.TextField(max_length=30)
+    description = models.TextField()
     category = models.ManyToManyField("Category", related_name="food_category")
     provider = models.ForeignKey(Restaurant, on_delete=models.CASCADE, blank=True,
                  related_name="foods")

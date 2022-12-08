@@ -9,7 +9,7 @@ from restaurant.models import  Food
 from restaurant.mixins import AddFoodMixin, FoodUpdateMixin
 from restaurant.forms import FoodForm
 
-class CreateFoodView(LoginRequiredMixin, AddFoodMixin, FormView):
+class FoodCreateView(LoginRequiredMixin, AddFoodMixin, FormView):
     '''
         Add food to database
     '''
@@ -30,7 +30,7 @@ class CreateFoodView(LoginRequiredMixin, AddFoodMixin, FormView):
 
 
     def get_form_kwargs(self, **kwargs):
-        kwargs = super(CreateFoodView, self).get_form_kwargs()
+        kwargs = super(FoodCreateView, self).get_form_kwargs()
         kwargs['restaurants'] = self.request.user.restaurant.all()
         return kwargs
         
@@ -51,15 +51,17 @@ class UpdateFoodView(LoginRequiredMixin, FoodUpdateMixin, UpdateView):
     def get_success_url(self):
         return reverse("restaurant:list-food")
 
-class DetailFoodView(DetailView):
+class FoodDetailView(DetailView):
     '''
         Detail page for foods
     '''
-    template_name = "food/detail-food.html"
+    template_name = "food/food-detail.html"
+    context_object_name = "food"
 
     def get_object(self):
-        return  get_object_or_404(Food, pk=self.kwargs["pk"],
-                          slug=self.kwargs["slug"])
+        return  get_object_or_404(Food, token=self.kwargs["token"])
+
+
 class ListFoodView(ListView):
     '''
         List of all foods of a restaurant
