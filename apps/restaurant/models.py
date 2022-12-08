@@ -79,7 +79,7 @@ class Food(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return  reverse("restaurant:detail-food", args=[self.token])
+        return  reverse("restaurant:food-detail", args=[self.token])
         
 
 class Category(models.Model):
