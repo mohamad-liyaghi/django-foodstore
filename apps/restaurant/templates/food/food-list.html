@@ -1,0 +1,29 @@
+{% extends '_base.html' %}
+
+{% block title %}Food list{% endblock title %}
+
+{% block body %}
+
+<h3>Food List</h3> <hr>
+<a  class="btn btn-success" href="{% url 'restaurant:add-food' %}">Add food</a> <br><hr>
+
+{% for food in foods %}
+
+<div class="card" style="width: 18rem; display:inline-block;">
+
+  {% if food.picture %}
+    <img class="card-img-top" src="{{food.picture.url}}">
+  {% endif %}
+
+  <div class="card-body">
+    <h5 class="card-title">{{ food.name }}</h5>
+    <p class="card-text">{{food.price}}$ | {{food.inventory}} | {% if food.is_available %}Available {% else %}Unavailable{% endif %}</p>
+      <a href="{{ food.get_absolute_url }}" class="btn btn-secondary">Detail</a>
+  </div>
+</div>
+
+{% empty %}
+  <h4>No food Available.</h4>
+{% endfor %}
+
+{% endblock body %}

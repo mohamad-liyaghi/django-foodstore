@@ -29,7 +29,7 @@ class FoodCreateView(LoginRequiredMixin, AddFoodMixin, FormView):
 
     def get_form_kwargs(self, **kwargs):
         kwargs = super(FoodCreateView, self).get_form_kwargs()
-        kwargs['restaurants'] = self.request.user.restaurant.all()
+        kwargs['restaurants'] = self.request.user.restaurant.filter(status="a")
         return kwargs
         
 
@@ -63,12 +63,12 @@ class FoodDetailView(UpdateView):
         
 
 
-class ListFoodView(ListView):
+class ListFoodView(LoginRequiredMixin, ListView):
     '''
         List of all foods of a restaurant
     '''
-    template_name = "food/list-food.html"
+    template_name = "food/food-list.html"
     context_object_name = "foods"
 
     def get_queryset(self):
-        return Food.objects.filter(provider= self.request.user.restaurant)
+        return Food.objects.filter(provider__in=self.request.user.restaurant.all())
