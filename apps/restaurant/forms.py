@@ -20,6 +20,18 @@ class RestaurantForm(forms.ModelForm):
 
 
 class FoodForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.restaurants = kwargs.pop('restaurants', None)
+        super(FoodForm, self).__init__(*args, **kwargs)
+        self.fields["provider"].queryset = self.restaurants
+
+
     class Meta:
         model = Food
-        fields = ("name", "slug", "picture", "description", "category", "provider", "inventory", "price", "is_available")
+        fields = ("name", "picture", "description", "category", 
+                "inventory", "price", "provider")
+
+    def save(self, commit=True):
+        form =  super().save(commit=False)
+        form.save()
+        return form

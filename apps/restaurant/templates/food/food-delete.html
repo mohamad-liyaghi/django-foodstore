@@ -1,0 +1,13 @@
+{% extends '_base.html' %}
+
+{% block title %}Delete Food{% endblock title %}
+
+{% block body %}
+<h2>Are you sure you wanna delete "{{ object.name }}"??</h2>
+
+<form method="post">{% csrf_token %}
+    
+    <br><button class="btn btn-danger" type="submit">Delete</button>
+    <br><br>
+</form>
+{% endblock body %}

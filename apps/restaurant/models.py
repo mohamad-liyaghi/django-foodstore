@@ -55,27 +55,32 @@ class Restaurant(models.Model):
 
 
 class Food(models.Model):
-    name = models.CharField(max_length= 10)
-    slug = models.SlugField(unique=True, blank=True)
-
+    name = models.CharField(max_length= 120)
     picture = models.ImageField(upload_to="foods/")
 
-    description = models.TextField(max_length=30)
+    description = models.TextField()
     category = models.ManyToManyField("Category", related_name="food_category")
-    provider = models.ForeignKey(Restaurant, on_delete=models.CASCADE, blank=True, related_name="foods")
+    provider = models.ForeignKey(Restaurant, on_delete=models.CASCADE, blank=True,
+                 related_name="foods")
 
     inventory = models.PositiveIntegerField(default=0)
 
     price = models.PositiveIntegerField()
-    is_available = models.BooleanField(default=True)
+
+    token = models.CharField(max_length=15, default=random_number)
 
     ratings = GenericRelation(Rating)
+
+    @property
+    def is_available(self):
+        return bool(self.inventory > 0)
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
-        return  reverse("restaurant:detail-food", args=[self.pk, self.slug])
+        return  reverse("restaurant:food-detail", args=[self.token])
+        
 
 class Category(models.Model):
     title = models.CharField(max_length=20)
