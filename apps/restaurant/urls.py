@@ -2,17 +2,18 @@ from django.urls import path
 from .views.restaurant import (RegisterRestaurantView,
                                      RestaurantProfileView, DashBoardRestaurant, RestaurantRequestListView,
                                      RestaurantRequestStatusView, RestaurantDeleteView, OrdersRestaurant, OrderSending, OrderArrived)
-from .views.food import (FoodCreateView, FoodDetailView, ListFoodView)
+from .views.food import (FoodCreateView, FoodDetailView, FoodListView, FoodDeleteView)
 
 app_name = "restaurant"
 
 
 urlpatterns = [
     path("", DashBoardRestaurant.as_view(), name="restaurant-dashboard"),
-    path("foods/", ListFoodView.as_view(), name="list-food"),
+    path("foods/", FoodListView.as_view(), name="food-list"),
 
     path("register/", RegisterRestaurantView.as_view(), name="register-restaurant"),
     path("add-food/", FoodCreateView.as_view(), name="add-food"),
+    path("delete-food/<str:token>/", FoodDeleteView.as_view(), name="delete-food"),
     path("requests/", RestaurantRequestListView.as_view(), name='restaurant-request-list'),
     path('restaurant-status/<str:restaurant_token>/<str:status>/', RestaurantRequestStatusView.as_view(), name="restaurant-status"),
     

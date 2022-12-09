@@ -40,6 +40,7 @@
         <button class="btn btn-success">Update</button>
     </form>
 
+    <br><a class="btn btn-danger" href="{% url 'restaurant:delete-food' food.token %}">Delete</a>
 {% endif %}
 
 <hr>
