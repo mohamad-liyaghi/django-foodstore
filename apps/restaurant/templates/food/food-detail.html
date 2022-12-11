@@ -21,7 +21,9 @@
 {% if food.is_available %}
     <h5>{{food.inventory}} in stock</h5><hr>
     <h5>Price: {{food.price}}</h5><hr>
-    <a class="btn btn-success" href="{% url 'customer:cart-add' food.id %}">Add to cart</a>
+    {% if request.user != food.provider.owner %}
+        <a class="btn btn-success" href="{% url 'customer:cart-add' food.token %}">Add to cart</a>
+    {% endif %}
 {% else %}
 <h3>This item is currently unavailable</h3>
 {% endif %}
