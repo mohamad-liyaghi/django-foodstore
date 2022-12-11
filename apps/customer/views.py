@@ -56,10 +56,11 @@ class CartAddView(LoginRequiredMixin, View):
 
 
 class CartRemoveView(View):
-    # remove an item form cart
-    def get(self, request, food_id):
+    """Remove an item from cart"""
+
+    def get(self, request, token):
         cart = Cart(request)
-        food = get_object_or_404(Food, id=food_id)
+        food = get_object_or_404(Food, token=token)
         cart.remove(food)
         messages.success(self.request, "Item removed from your cart")
         return redirect('customer:cart-page')
