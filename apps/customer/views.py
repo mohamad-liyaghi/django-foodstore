@@ -34,22 +34,33 @@ class CartPageView(View):
         orders = Order.objects.filter(user= request.user)
         return render(request, "customer/cart.html", {'cart': cart, "orders" : orders})
 
-class CartAddView(View):
-    # add an item to cart
-    def get(self, request, food_id):
+
+class CartAddView(LoginRequiredMixin, View):
+    '''Add sth to cart (sessions)'''
+
+    def get(self, request, token):
         cart = Cart(request)
-        food = get_object_or_404(Food, id= food_id)
+        food = get_object_or_404(Food, token=token)
+
+        if request.user == food.provider.owner:
+            messages.success(self.request, "You can not order your restaurants food.", "warning")
+            return redirect('restaurant:food-detail', token=food.token)
 
         if food.is_available:
             cart.add(food, 1)
-            messages.success(self.request, "Food added to your cart")
-        return redirect('customer:cart-page')
+            messages.success(self.request, "Food added to your cart", "success")
+            return redirect('restaurant:food-detail', token=food.token)
+
+        messages.success(self.request, "Sorry, this item is unavailable", "danger")
+        return redirect('restaurant:food-detail', token=food.token)
+
 
 class CartRemoveView(View):
-    # remove an item form cart
-    def get(self, request, food_id):
+    """Remove an item from cart"""
+
+    def get(self, request, token):
         cart = Cart(request)
-        food = get_object_or_404(Food, id=food_id)
+        food = get_object_or_404(Food, token=token)
         cart.remove(food)
         messages.success(self.request, "Item removed from your cart")
         return redirect('customer:cart-page')
