@@ -16,7 +16,7 @@ urlpatterns =[
 
     path("add-order/", OrderCreateView.as_view(), name="order-create"),
     path("order-detail/<str:order_id>/", OrderDetailView.as_view(), name="order-detail"),
-    path("pay-order/<int:id>/<str:orderid>/", OrderPayView.as_view(), name="order-pay"),
+    path("pay-order/<str:order_id>/", OrderPayView.as_view(), name="order-pay"),
 
 
 ]

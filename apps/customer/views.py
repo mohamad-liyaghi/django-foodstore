@@ -101,14 +101,18 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
 
 
 class OrderPayView(LoginRequiredMixin, View):
-    # page in order to pay for order
-    # you have to add your custom payment method
-    def get(self, request, id, orderid):
-        order = get_object_or_404(Order, id=id, orderid= orderid)
+    """
+        Pay for an order. 
+    """
+
+    def get(self, request, order_id):
+        order = get_object_or_404(Order, order_id= order_id, user=self.request.user)
         order.is_paid = True
         order.status = "preparing"
         order.save()
+        messages.success(self.request, "Order is paid now, wait for preparation proccess.", "success")
         return redirect("customer:cart-page")
+
 
 class FoodSearchView(ListView):
     '''

@@ -10,7 +10,7 @@
 <h4>Items:</h4> <small>{% for item in items %} <a href="{% url 'restaurant:food-detail' item.item.token %}">{{item.item}}</a> {%endfor%}</small> <hr>    
 
 {% if not object.is_paid %}
-<a href="{% url 'customer:order-pay' object.id object.order_id %}" class="btn btn-success">Pay {{object.total_price}}$</a>
+<a href="{% url 'customer:order-pay'  object.order_id %}" class="btn btn-success">Pay {{object.total_price}}$</a>
 
 
 {% else %}
