@@ -21,8 +21,9 @@ class Order(models.Model):
     status = models.CharField(choices=status.choices, default=status.ordered, max_length=10)
 
     @property
-    def total_price(self):
-        return sum(item.price() for item in self.items.all())
+    def total_price(self):        
+        total = sum(item.price() for item in self.items.all())
+        return total
 
     def __str__(self):
         return str(self.order_id)
@@ -37,7 +38,6 @@ class OrderItem(models.Model):
     
     prepared = models.BooleanField(default=False)
 
-    @property
     def price(self):
         return self.item.price * self.quantity
 

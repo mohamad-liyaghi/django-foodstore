@@ -67,7 +67,7 @@ class CartRemoveView(View):
 
 class OrderCreateView(LoginRequiredMixin, View):
     '''Create a new order'''
-    
+
     def get(self, request):
         cart = Cart(request)
 
@@ -92,7 +92,12 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
     template_name = "customer/order-detail.html"
 
     def get_object(self):
-        return get_object_or_404(Order, id= self.kwargs["id"], orderid= self.kwargs["orderid"])
+        return get_object_or_404(Order, order_id=self.kwargs["order_id"])
+    
+    def get_context_data(self, **kwargs):        
+        data = super().get_context_data(**kwargs)
+        data["items"] = self.get_object().items.all()
+        return data
 
 
 class OrderPayView(LoginRequiredMixin, View):
