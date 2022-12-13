@@ -3,13 +3,11 @@ from django.db.models import Q
 from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import  messages
-from django.template import RequestContext
 
 import  random
 
-
 from restaurant.models import Food, Category
-from customer.models import Order
+from customer.models import Order, OrderItem
 
 from .cart import Cart
 
@@ -65,23 +63,29 @@ class CartRemoveView(View):
         messages.success(self.request, "Item removed from your cart")
         return redirect('customer:cart-page')
 
+
+
 class OrderCreateView(LoginRequiredMixin, View):
-    # create a new order
+    '''Create a new order'''
+    
     def get(self, request):
         cart = Cart(request)
-        order = Order.objects.create(user= request.user, orderid= random.randint(10000000000000,99999999999999),
-                                     total_price= cart.get_total_price())
-        for food in cart:
-            object = get_object_or_404(Food, name= food["product"])
 
-            if object.is_available:
-                order.items.add(food["product"])
-                object.inventory -= 1
-                object.save()
-        cart.clear()
-        order.save()
-        messages.success(self.request, "Order created successfully")
-        return  redirect("customer:cart")
+        if cart:
+            order = Order.objects.create(user=request.user)
+            for item in cart:
+                try:
+                    OrderItem.objects.create(order=order, item=item['product'], quantity=item['quantity'])
+                except:
+                    pass
+
+            cart.clear()
+            messages.success(self.request, "Order created successfully", "success")
+            return redirect("customer:cart-page")
+
+        messages.success(self.request, "Cart is empty.", "warning")
+        return redirect("customer:cart-page")
+
 
 class OrderDetailView(LoginRequiredMixin, DetailView):
     # show detail of an order
