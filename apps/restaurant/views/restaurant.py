@@ -8,6 +8,7 @@ from django.urls import reverse, reverse_lazy
 from restaurant.forms import RestaurantForm
 from restaurant.mixins import OrderListMixin, OrderArivedMixin
 from restaurant.models import Restaurant, Food
+from customer.models import OrderItem
 from customer.models import Order
 
 
@@ -147,7 +148,14 @@ class RestaurantDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "restaurant/restaurant-delete.html"
     context_object_name = "restaurant"
     success_url = reverse_lazy("customer:home")
-    #TODO check if there is any order
+
+    def dispatch(self, request, *args, **kwargs):
+        if OrderItem.objects.filter(Q(item__provider=self.get_object()) & Q(order__is_paid=True) &
+                                    ~Q(prepared=True)).exists():
+            messages.success(self.request, "You can not delete a restaurant while there are some orders.", "danger")
+            return redirect("restaurant:restaurant-orders")
+            
+        return super().dispatch(request, *args, **kwargs)
 
     def get_object(self):
         return get_object_or_404(self.request.user.restaurant, 
