@@ -4,16 +4,17 @@
 {% block title %}DashBord{% endblock title %}
 
 {% block body %}
-<h2>DashBord</h2> <hr><br>
-<h4>You have {{food}} foods</h4>
-<a href="{% url 'restaurant:list-food' %}">List of foods</a>
+<h2>DashBord</h2> <hr>
+<h4>You have added {{food}} foods.</h4>
+<a href="{% url 'restaurant:food-list' %}">List of foods</a>
 <br><hr>
 <h4><a href="{% url 'restaurant:restaurant-orders' %}">Orders</a> </h4>
-<br><hr>
+<hr>
 
-<a href="{{ restaurant.get_absolute_url }}"><h4>Profile page</h4></a><br>
-<a href="{% url 'restaurant:restaurant-update' restaurant.pk restaurant.slug%}"><h4>Update your profile page</h4></a>
-
-<br><hr>
+<h4>Registered Restaurants:</h4>
+{% for restaurant in restaurants %}
+    <a href="{% url 'restaurant:restaurant-profile' restaurant.token%}"><h4>{{ restaurant.name }}</h4></a> <br>
+{% endfor %}
+<hr>
 
 {% endblock body %}

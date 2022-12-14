@@ -162,17 +162,26 @@ class RestaurantDeleteView(LoginRequiredMixin, DeleteView):
                                 token=self.kwargs["token"])
 
 
-class DashBoardRestaurant(TemplateView):
+class DashBoardRestaurant(LoginRequiredMixin, TemplateView):
     '''
         Dashboard page
     '''
     template_name = "restaurant/dashboard-restaurant.html"
+    def dispatch(self, request, *args, **kwargs):
+        self.restaurants = Restaurant.objects.filter(owner=self.request.user)
+        if self.restaurants.exists():
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.success(self.request, "This page is only available for users who registered a restaurant.", "danger")
+        return redirect("restaurant:register-restaurant")
 
     def get_context_data(self, **kwargs):
         context = super(DashBoardRestaurant, self).get_context_data(**kwargs)
-        context['food'] = Food.objects.filter(provider= self.request.user.restaurant).count()
-        context['restaurant'] = Restaurant.objects.filter(owner= self.request.user).first()
+        
+        context['restaurants'] = Restaurant.objects.filter(owner= self.request.user)
+        context['food'] = Food.objects.filter(provider__in=self.restaurants).count()
         return context
+
 
 class OrdersRestaurant(LoginRequiredMixin, OrderListMixin,ListView):
     '''
