@@ -12,7 +12,6 @@ class RestaurantUpdateMixin():
     '''
 
     def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
         user = self.request.user
 
         if not user.add_food and user.restaurant:
