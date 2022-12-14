@@ -110,6 +110,11 @@ class OrderPayView(LoginRequiredMixin, View):
         order.is_paid = True
         order.status = "preparing"
         order.save()
+        
+        for item in order.items.all():
+            item.item.inventory -= item.quantity
+            item.item.save()
+        
         messages.success(self.request, "Order is paid now, wait for preparation proccess.", "success")
         return redirect("customer:cart-page")
 
