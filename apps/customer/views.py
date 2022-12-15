@@ -91,6 +91,12 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
     # show detail of an order
     template_name = "customer/order-detail.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user == self.get_object().owner:
+            return super().dispatch(request, *args, **kwargs)
+        
+        return redirect("customer:home")
+
     def get_object(self):
         return get_object_or_404(Order, order_id=self.kwargs["order_id"])
     

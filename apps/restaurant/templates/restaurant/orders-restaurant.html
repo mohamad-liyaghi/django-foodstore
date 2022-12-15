@@ -9,19 +9,21 @@
     <div class="card-header" id="headingOne">
       <h5 class="mb-0">
         <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-            {{order.orderid}}
+            {{order.order}}
         </button>
       </h5>
     </div>
 
     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
       <div class="card-body">
-        {% for food in order.items.all %} {{ food }} <br> {% endfor %}
-          <br>
-          <a class="btn btn-success" href="{% url 'restaurant:food-sending' order.id order.orderid %}">Delivered</a>
+        <a href="{% url 'restaurant:food-detail' order.item.token %}">{{ order.item }}</a> | {{ order.quantity }}
+          <br><br>
+          <a class="btn btn-success" href="#">Prepared</a>
       </div>
     </div>
   </div>
 </div>
+{% empty %}
+  <h3>No order available</h3>
 {% endfor %}
 {% endblock body %}

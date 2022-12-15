@@ -183,15 +183,17 @@ class DashBoardRestaurant(LoginRequiredMixin, TemplateView):
         return context
 
 
-class OrdersRestaurant(LoginRequiredMixin, OrderListMixin,ListView):
+class RestaurantOrderList(LoginRequiredMixin, OrderListMixin, ListView):
     '''
         Get all orders related to a restaurant
     '''
     template_name = "restaurant/orders-restaurant.html"
     context_object_name = "orders"
+
     def get_queryset(self):
-        return Order.objects.filter(Q(items__in= self.request.user.restaurant.foods.all()), Q(status="preparing"),
-                                    ~Q(prepared_items__in = self.request.user.restaurant.foods.all()))
+        foods = Food.objects.only("name").filter(provider__owner=self.request.user)
+        return OrderItem.objects.filter(Q(item__in=foods) & Q(prepared=False))
+
 
 class OrderSending(LoginRequiredMixin, OrderListMixin, View):
     '''
