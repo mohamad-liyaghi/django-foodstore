@@ -25,6 +25,6 @@ urlpatterns = [
 
     path('orders/', RestaurantOrderList.as_view(), name= "restaurant-orders"),
     path('item-prepared/<int:id>/', ItemPreparedView.as_view(), name="item-prepared"),
-    path('order-arrived/<int:id>/<int:orderid>/', OrderArrived.as_view(), name="food-arrived"),
+    path('order-arrived/<int:order_id>/', OrderArrived.as_view(), name="food-arrived"),
 
 ]

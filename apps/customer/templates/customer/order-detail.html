@@ -15,8 +15,8 @@
 
 {% else %}
     <h4>Status: {{object.status}}</h4>
-    {% if object.status == 'sending' %}
-        <a class="btn btn-success" href="{% url 'restaurant:food-arrived' object.id object.orderid %}">Arrived</a>
+    {% if object.status == 'Sending' %}
+        <a class="btn btn-success" href="{% url 'restaurant:food-arrived' object.order_id %}">Arrived</a>
     {% endif %}
 {% endif %}
 

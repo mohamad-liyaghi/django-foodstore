@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.urls import reverse, reverse_lazy
 
 from restaurant.forms import RestaurantForm
-from restaurant.mixins import OrderListMixin, OrderArivedMixin
+from restaurant.mixins import OrderListMixin
 from restaurant.models import Restaurant, Food
 from customer.models import OrderItem
 from customer.models import Order
@@ -215,13 +215,15 @@ class ItemPreparedView(LoginRequiredMixin, OrderListMixin, View):
         messages.success(request, "Item prepared.", "success")
         return redirect("restaurant:restaurant-orders")
 
-class OrderArrived(LoginRequiredMixin, OrderArivedMixin, View):
+class OrderArrived(LoginRequiredMixin, View):
     '''
         Change status of an order to Arrived
     '''
 
-    def get(self, request, id, orderid):
-        object = get_object_or_404(Order, id= self.kwargs["id"], orderid=self.kwargs["orderid"])
+    def get(self, request, order_id):
+        object = get_object_or_404(Order, order_id=self.kwargs["order_id"], user=request.user,
+                                    status="Sending")
+
         object.status = "Arrived"
         object.save()
-        return redirect("customer:cart")
+        return redirect("customer:cart-page")

@@ -92,7 +92,7 @@ class OrderDetailView(LoginRequiredMixin, DetailView):
     template_name = "customer/order-detail.html"
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user == self.get_object().owner:
+        if request.user == self.get_object().user:
             return super().dispatch(request, *args, **kwargs)
         
         return redirect("customer:home")
