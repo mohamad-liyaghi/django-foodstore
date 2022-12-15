@@ -1,7 +1,8 @@
 from django.urls import path
 from .views.restaurant import (RegisterRestaurantView,
                                      RestaurantProfileView, DashBoardRestaurant, RestaurantRequestListView,
-                                     RestaurantRequestStatusView, RestaurantDeleteView, OrdersRestaurant, OrderSending, OrderArrived)
+                                     RestaurantRequestStatusView, RestaurantDeleteView, RestaurantOrderList, ItemPreparedView, 
+                                     OrderArrived)
 from .views.food import (FoodCreateView, FoodDetailView, FoodListView, FoodDeleteView)
 
 app_name = "restaurant"
@@ -22,8 +23,8 @@ urlpatterns = [
     path("food-detail/<str:token>/", FoodDetailView.as_view(), name="food-detail"),
     path("profile/<str:token>/", RestaurantProfileView.as_view(), name="restaurant-profile"),
 
-    path('orders/', OrdersRestaurant.as_view(), name= "restaurant-orders"),
-    path('order-send/<int:id>/<int:orderid>/', OrderSending.as_view(), name="food-sending"),
-    path('order-arrived/<int:id>/<int:orderid>/', OrderArrived.as_view(), name="food-arrived"),
+    path('orders/', RestaurantOrderList.as_view(), name= "restaurant-orders"),
+    path('item-prepared/<int:id>/', ItemPreparedView.as_view(), name="item-prepared"),
+    path('order-arrived/<int:order_id>/', OrderArrived.as_view(), name="food-arrived"),
 
 ]

@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.urls import reverse_lazy
 
 from restaurant.models import  Food
-from customer.views import Order
+from customer.views import Order, OrderItem
 from restaurant.mixins import AddFoodMixin
 from restaurant.forms import FoodForm
 
@@ -80,19 +80,20 @@ class FoodListView(LoginRequiredMixin, ListView):
 class FoodDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "food/food-delete.html"
     success_url = reverse_lazy("restaurant:food-list")
+    def dispatch(self, request, *args, **kwargs):
+        unprepared_order = OrderItem.objects.filter(Q(item=self.get_object()) & Q(order__is_paid=True) &
+                                    ~Q(prepared=True))
+        if unprepared_order.exists():
+            messages.success(self.request, "You have orders that you havnt prepared them.", "danger")
+            return redirect("restaurant:food-detail", token=self.get_object().token)
+
+        return super().dispatch(request, *args, **kwargs)
 
     def get_object(self):
         return get_object_or_404(Food,token=self.kwargs["token"], 
                                     provider__in=self.request.user.restaurant.filter(status="a"))
 
     def post(self, request, *args, **kwargs):
-        #TODO fix the query later.
-        unprepared_order = Order.objects.filter(Q(items=self.get_object()) & 
-                                                ~Q(prepared_items=self.get_object()) & Q(is_paid=True))
-
-        if unprepared_order.exists():
-            messages.success(self.request, "You have orders that you havnt prepared.", "danger")
-            return redirect("restaurant:food-detail", token=self.get_object().token)
         
         messages.success(self.request, "food deleted successfully", "success")
         return super().post(request, *args, **kwargs)

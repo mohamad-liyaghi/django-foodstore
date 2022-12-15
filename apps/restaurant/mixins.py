@@ -14,7 +14,7 @@ class RestaurantUpdateMixin():
     def dispatch(self, request, *args, **kwargs):
         user = self.request.user
 
-        if not user.add_food and user.restaurant:
+        if user.restaurant.count() == 0:
             return redirect("restaurant:register-restaurant")
 
         return super().dispatch(request, *args, **kwargs)
@@ -41,15 +41,3 @@ class OrderListMixin(RestaurantUpdateMixin):
         Check if user can access to orders page
     '''
     pass
-
-class OrderArivedMixin():
-    '''
-        Check if an order belongs to a user
-    '''
-
-    def dispatch(self, request, *args, **kwargs):
-        object = get_object_or_404(Order, id=self.kwargs["id"], orderid=self.kwargs["orderid"])
-        if object.user == self.request.user:
-            return super().dispatch(request, *args, **kwargs)
-
-        return  redirect("customer:home")

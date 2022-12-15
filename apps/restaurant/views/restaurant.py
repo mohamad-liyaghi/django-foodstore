@@ -6,8 +6,9 @@ from django.db.models import Q
 from django.urls import reverse, reverse_lazy
 
 from restaurant.forms import RestaurantForm
-from restaurant.mixins import OrderListMixin, OrderArivedMixin
+from restaurant.mixins import OrderListMixin
 from restaurant.models import Restaurant, Food
+from customer.models import OrderItem
 from customer.models import Order
 
 
@@ -147,60 +148,82 @@ class RestaurantDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "restaurant/restaurant-delete.html"
     context_object_name = "restaurant"
     success_url = reverse_lazy("customer:home")
-    #TODO check if there is any order
+
+    def dispatch(self, request, *args, **kwargs):
+        if OrderItem.objects.filter(Q(item__provider=self.get_object()) & Q(order__is_paid=True) &
+                                    ~Q(prepared=True)).exists():
+            messages.success(self.request, "You can not delete a restaurant while there are some orders.", "danger")
+            return redirect("restaurant:restaurant-orders")
+            
+        return super().dispatch(request, *args, **kwargs)
 
     def get_object(self):
         return get_object_or_404(self.request.user.restaurant, 
                                 token=self.kwargs["token"])
 
 
-class DashBoardRestaurant(TemplateView):
+class DashBoardRestaurant(LoginRequiredMixin, TemplateView):
     '''
         Dashboard page
     '''
     template_name = "restaurant/dashboard-restaurant.html"
+    def dispatch(self, request, *args, **kwargs):
+        self.restaurants = Restaurant.objects.filter(owner=self.request.user)
+        if self.restaurants.exists():
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.success(self.request, "This page is only available for users who registered a restaurant.", "danger")
+        return redirect("restaurant:register-restaurant")
 
     def get_context_data(self, **kwargs):
         context = super(DashBoardRestaurant, self).get_context_data(**kwargs)
-        context['food'] = Food.objects.filter(provider= self.request.user.restaurant).count()
-        context['restaurant'] = Restaurant.objects.filter(owner= self.request.user).first()
+        
+        context['restaurants'] = Restaurant.objects.filter(owner= self.request.user)
+        context['food'] = Food.objects.filter(provider__in=self.restaurants).count()
         return context
 
-class OrdersRestaurant(LoginRequiredMixin, OrderListMixin,ListView):
+
+class RestaurantOrderList(LoginRequiredMixin, OrderListMixin, ListView):
     '''
         Get all orders related to a restaurant
     '''
     template_name = "restaurant/orders-restaurant.html"
     context_object_name = "orders"
-    def get_queryset(self):
-        return Order.objects.filter(Q(items__in= self.request.user.restaurant.foods.all()), Q(status="preparing"),
-                                    ~Q(prepared_items__in = self.request.user.restaurant.foods.all()))
 
-class OrderSending(LoginRequiredMixin, OrderListMixin, View):
+    def get_queryset(self):
+        foods = Food.objects.only("name").filter(provider__owner=self.request.user)
+        return OrderItem.objects.filter(Q(item__in=foods) & Q(prepared=False))
+
+
+class ItemPreparedView(LoginRequiredMixin, OrderListMixin, View):
     '''
         Change status of an order
     '''
 
-    def get(self, request, id, orderid):
-        object = get_object_or_404(Order, id= self.kwargs["id"], orderid=self.kwargs["orderid"])
-        foods = object.items.all()
-        for food in foods:
-                if food in self.request.user.restaurant.foods.all():
-                    object.prepared_items.add(food)
+    def get(self, request, id):
+        item = get_object_or_404(OrderItem, id=self.kwargs["id"], prepared=False,
+                                    item__provider__in=self.request.user.restaurant.all())
+        
+        item.prepared = True
+        item.save()
 
-        if object.items.count() == object.prepared_items.count():
-            object.status = "sending"
 
-        object.save()
+        if item.order.items.filter(prepared=False).count() == 0:
+            item.order.status = "Sending"
+            item.order.save()
+
+        messages.success(request, "Item prepared.", "success")
         return redirect("restaurant:restaurant-orders")
 
-class OrderArrived(LoginRequiredMixin, OrderArivedMixin, View):
+class OrderArrived(LoginRequiredMixin, View):
     '''
         Change status of an order to Arrived
     '''
 
-    def get(self, request, id, orderid):
-        object = get_object_or_404(Order, id= self.kwargs["id"], orderid=self.kwargs["orderid"])
+    def get(self, request, order_id):
+        object = get_object_or_404(Order, order_id=self.kwargs["order_id"], user=request.user,
+                                    status="Sending")
+
         object.status = "Arrived"
         object.save()
-        return redirect("customer:cart")
+        return redirect("customer:cart-page")

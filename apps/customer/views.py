@@ -3,13 +3,11 @@ from django.db.models import Q
 from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import  messages
-from django.template import RequestContext
 
 import  random
 
-
 from restaurant.models import Food, Category
-from customer.models import Order
+from customer.models import Order, OrderItem
 
 from .cart import Cart
 
@@ -65,41 +63,67 @@ class CartRemoveView(View):
         messages.success(self.request, "Item removed from your cart")
         return redirect('customer:cart-page')
 
+
+
 class OrderCreateView(LoginRequiredMixin, View):
-    # create a new order
+    '''Create a new order'''
+
     def get(self, request):
         cart = Cart(request)
-        order = Order.objects.create(user= request.user, orderid= random.randint(10000000000000,99999999999999),
-                                     total_price= cart.get_total_price())
-        for food in cart:
-            object = get_object_or_404(Food, name= food["product"])
 
-            if object.is_available:
-                order.items.add(food["product"])
-                object.inventory -= 1
-                object.save()
-        cart.clear()
-        order.save()
-        messages.success(self.request, "Order created successfully")
-        return  redirect("customer:cart")
+        if cart:
+            order = Order.objects.create(user=request.user)
+            for item in cart:
+                try:
+                    OrderItem.objects.create(order=order, item=item['product'], quantity=item['quantity'])
+                except:
+                    pass
+
+            cart.clear()
+            messages.success(self.request, "Order created successfully", "success")
+            return redirect("customer:cart-page")
+
+        messages.success(self.request, "Cart is empty.", "warning")
+        return redirect("customer:cart-page")
+
 
 class OrderDetailView(LoginRequiredMixin, DetailView):
     # show detail of an order
     template_name = "customer/order-detail.html"
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user == self.get_object().user:
+            return super().dispatch(request, *args, **kwargs)
+        
+        return redirect("customer:home")
+
     def get_object(self):
-        return get_object_or_404(Order, id= self.kwargs["id"], orderid= self.kwargs["orderid"])
+        return get_object_or_404(Order, order_id=self.kwargs["order_id"])
+    
+    def get_context_data(self, **kwargs):        
+        data = super().get_context_data(**kwargs)
+        data["items"] = self.get_object().items.all()
+        return data
 
 
 class OrderPayView(LoginRequiredMixin, View):
-    # page in order to pay for order
-    # you have to add your custom payment method
-    def get(self, request, id, orderid):
-        order = get_object_or_404(Order, id=id, orderid= orderid)
+    """
+        Pay for an order. 
+    """
+
+    def get(self, request, order_id):
+        order = get_object_or_404(Order, order_id= order_id, user=self.request.user)
         order.is_paid = True
         order.status = "preparing"
         order.save()
+        
+        for item in order.items.all():
+            item.item.inventory -= item.quantity
+            item.item.save()
+        
+        messages.success(self.request, "Order is paid now, wait for preparation proccess.", "success")
         return redirect("customer:cart-page")
+
 
 class FoodSearchView(ListView):
     '''
