@@ -18,7 +18,7 @@
       <div class="card-body">
         <a href="{% url 'restaurant:food-detail' order.item.token %}">{{ order.item }}</a> | {{ order.quantity }}
           <br><br>
-          <a class="btn btn-success" href="#">Prepared</a>
+          <a class="btn btn-success" href="{% url 'restaurant:item-prepared' order.id %}">Prepared</a>
       </div>
     </div>
   </div>

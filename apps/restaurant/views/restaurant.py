@@ -195,22 +195,24 @@ class RestaurantOrderList(LoginRequiredMixin, OrderListMixin, ListView):
         return OrderItem.objects.filter(Q(item__in=foods) & Q(prepared=False))
 
 
-class OrderSending(LoginRequiredMixin, OrderListMixin, View):
+class ItemPreparedView(LoginRequiredMixin, OrderListMixin, View):
     '''
         Change status of an order
     '''
 
-    def get(self, request, id, orderid):
-        object = get_object_or_404(Order, id= self.kwargs["id"], orderid=self.kwargs["orderid"])
-        foods = object.items.all()
-        for food in foods:
-                if food in self.request.user.restaurant.foods.all():
-                    object.prepared_items.add(food)
+    def get(self, request, id):
+        item = get_object_or_404(OrderItem, id=self.kwargs["id"], prepared=False,
+                                    item__provider__in=self.request.user.restaurant.all())
+        
+        item.prepared = True
+        item.save()
 
-        if object.items.count() == object.prepared_items.count():
-            object.status = "sending"
 
-        object.save()
+        if item.order.items.filter(prepared=False).count() == 0:
+            item.order.status = "Sending"
+            item.order.save()
+
+        messages.success(request, "Item prepared.", "success")
         return redirect("restaurant:restaurant-orders")
 
 class OrderArrived(LoginRequiredMixin, OrderArivedMixin, View):
