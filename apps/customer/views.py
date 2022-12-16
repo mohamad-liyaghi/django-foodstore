@@ -125,18 +125,35 @@ class OrderPayView(LoginRequiredMixin, View):
         return redirect("customer:cart-page")
 
 
-class FoodSearchView(ListView):
+class FoodSearchView(LoginRequiredMixin, ListView):
     '''
         Show result of searched data
     '''
     template_name = "customer/food-list.html"
     context_object_name = "foods"
 
+    def dispatch(self, request, *args, **kwargs):
+        self.user = self.request.user.profile.first()
+
+        if self.user.city and self.user.country:
+            return super().dispatch(request, *args, **kwargs)
+
+        messages.success(request, "First you should update your profile.", "warning")
+        return redirect("accounts:profile")
+
     def get_queryset(self):
         q = self.request.GET.get('q', None)
-        return Food.objects.filter(
-            Q(name__icontains=q) | Q(category__title= q)
-        ).order_by("-is_available")
+
+        food = Food.objects.select_related("provider").filter(
+            Q(name__icontains=q) & Q(provider__country=self.user.country) | Q(Q(category__title=q))
+        ).order_by("inventory")
+
+        food_filtered_by_city = food.filter(Q(provider__city=self.user.city))
+
+        if food_filtered_by_city:
+            return food_filtered_by_city
+
+        return food
 
 
 
