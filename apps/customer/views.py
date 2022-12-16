@@ -3,8 +3,7 @@ from django.db.models import Q
 from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import  messages
-
-import  random
+from django.db.models import Count
 
 from restaurant.models import Food, Category
 from customer.models import Order, OrderItem
@@ -18,7 +17,10 @@ class HomePageView(TemplateView):
     template_name = "customer/home.html"
     def get_context_data(self, **kwargs):
         context = super(HomePageView, self).get_context_data(**kwargs)
-        context['categories'] = Category.objects.all().order_by("food_category")[:5]
+        
+        context['categories'] = Category.objects.annotate(
+                                                count=Count('food_category__id')
+                                                ).order_by('-count')[:5]
         return context
 
 

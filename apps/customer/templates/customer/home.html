@@ -1,6 +1,6 @@
 {% extends '_base.html' %}
 
-{% block title %}Home page{% endblock title %}
+{% block title %}Django Food Store{% endblock title %}
 
 {% block body %}
 <br>
@@ -22,6 +22,8 @@
 <center>
     {% for category in categories %}
             <a href="{% url 'customer:food-result' %}?q={{category}}" class="btn btn-primary ">{{category}}</a>
+    {% empty %}
+        <h5>No category registered yet.</h5>
     {% endfor %}
 </center>
 {% endblock body %}
