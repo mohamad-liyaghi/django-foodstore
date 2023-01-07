@@ -14,7 +14,7 @@ and pay for that.</p>
 <h3>First You have to clone the project.</h3>
 
 ```
-> git clone https://github.com/Ml06py/django-foodstore.git
+> git clone https://github.com/mohamad-liyaghi/django-foodstore.git
 ```
 
 <h3>Then cd to the project folder.</h3>
